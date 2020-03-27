@@ -1,0 +1,101 @@
+[%  include_dsv_parser = 1;
+    page_title = 'BLASTp Results';
+
+    WRAPPER 'views/inc/page_wrapper.tt';
+    PROCESS 'views/inc/macros.tt';
+
+    page_content = [
+        {   name      => page_title,
+            name_lc   => "blastp_results",
+            content   => 'table',
+            table_config => {
+              id                => "blastp_results-table",
+              for_datatables_js => 1,
+            }
+        },
+    ];
+
+    tabbed_layout( page_content = page_content );
+%]
+</div>
+<script>
+  "use strict";
+  $(document).ready(function () {
+    const cols = [
+      { data: "alignment_coverage",
+        title: "Alignment coverage",
+        orderable: false,
+        render: ( data, type, row, meta ) => {
+          if (type !== 'display')
+            return data
+          let length = data[0]*1 + data[1]*1
+
+          return '<div class="progress">' +
+            '<div class="progress-bar progress-bar-null" style="width: ' + data[0] + '%"></div>'
+            + '<div class="progress-bar" role="progressbar" style="width: ' + data[1] + '%">'
+            + '<span class="sr-only">match: ' + data[0] + "%-" + length + '%</span></div>'
+            + '</div>';
+        },
+      },
+      {
+        data: "gene_id",
+        title: "Gene ID",
+      },
+      {
+        data: "function",
+        title: "Function",
+      },
+      {
+        data: "genome",
+        title: "Genome",
+      },
+      { data: "ident%",
+        title: "Ident %",
+      },
+      { data: "aln_len",
+        title: "Align. len.",
+      },
+      { data: "e-value",
+        title: "e-value"
+      },
+      { data: "bit_score",
+        title: "Bit score",
+      },
+      { data: "start_end",
+        title: "Q start-end: match start-end",
+      },
+      { data: "mismatch",
+        title: "Mismatch",
+      },
+      { data: "gap_open",
+        title: "Gap open",
+      },
+    ],
+
+    tableConfig = {
+      dom: 'Bfrtip',
+      buttons: ['csvHtml5', 'colvis'],
+      lengthMenu: [ [25, 50, -1], [25, 50, "All"] ],
+      columns: cols,
+      createdRow: function( row, data ) {
+        if ( data.passes_criteria === "false" ) {
+          $(row).addClass( 'danger' );
+        }
+      },
+      order: [[ 1, "asc" ]],
+    }
+
+    d3.tsv("/static/kb_blast_BLASTp_Search.tsv").then(function(data) {
+      data.forEach( d => {
+        // convert left/middle/right into appropriate things
+        d.alignment_coverage = [ d.left, d.middle, d.right ]
+        // concat start/end, etc.
+        d.start_end = d.q_beg + '-' + d.q_end + ': ' + d.h_beg + '-' + d.h_end
+      } )
+
+      tableConfig.data = data
+      $('#blastp_results-table').DataTable(tableConfig);
+    });
+  })
+</script>
+[% END; # end wrapper %]

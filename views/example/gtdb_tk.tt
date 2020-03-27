@@ -1,0 +1,272 @@
+[%
+    page_title = 'GTDB-tk Results';
+    WRAPPER 'views/inc/page_wrapper.tt';
+
+    # table layout bits
+    simpleTableCols = [
+      "User Genome",
+      "Classification",
+      "FastANI Reference",
+      "FastANI Reference Radius",
+      "FastANI Taxonomy",
+      "FastANI ANI",
+      "FastANI Alignment Fraction",
+      "Closest Placement Reference",
+      "Closest Placement Taxonomy",
+      "Closest Placement ANI",
+      "Closest Placement Alignment Fraction",
+      "Classification Method",
+      "Note",
+      "Other Related References",
+      "AA Percent",
+      "RED Value",
+      "Warnings",
+    ];
+
+    markerTableCols = [
+      "Name",
+      "Unique Gene Count",
+      "Multiple Gene Count",
+      "Missing Gene Count",
+      "Unique Gene List",
+      "Multiple Gene List",
+      "Missing Gene List",
+    ];
+
+    page_content = [
+        {   name    => "Bacteria",
+            name_lc => "bacteria",
+            content => 'table',
+            file    => "gtdbtk.bac120.summary.tsv.json",
+            table_config  => {
+              thead => {
+                enum => simpleTableCols,
+              },
+            },
+        },
+        {   name    => "Archaea",
+            name_lc => "archaea",
+            content => 'table',
+            file    => "gtdbtk.ar122.summary.tsv.json",
+            table_config  => {
+              thead => {
+                enum => simpleTableCols,
+              },
+            },
+        },
+        {   name    => "Bacteria Marker Summary",
+            name_lc => "bacteria_marker",
+            content => 'table',
+            file    => "gtdbtk.bac120.markers_summary.tsv.json",
+            table_config  => {
+              thead => {
+                enum => markerTableCols,
+              },
+            },
+        },
+        {   name    => "Archaea Marker Summary",
+            name_lc => "archaea_marker",
+            content => 'table',
+            file    => "gtdbtk.ar122.markers_summary.tsv.json",
+            table_config  => {
+              thead => {
+                enum => markerTableCols,
+              },
+            },
+        },
+    ];
+
+    # set up the table config
+    FOR item IN page_content;
+      item.table_config.for_datatables_js = 1;
+      item.table_config.id = item.name_lc _ '-table';
+      item.table_config.caption = 'GTDB-tk results: ' _ item.name;
+    END;
+
+    PROCESS 'views/inc/macros.tt';
+
+    tabbed_layout( page_content = page_content );
+
+%]
+</div>
+<script>
+  $(document).ready(function () {
+
+    function semiColonSpacer( data, type ) {
+      return type === 'display'
+        ? data == null
+          ? data
+          : data.replace(/;/g, ';<br>')
+        : data;
+    }
+
+    function commaSpacer( data, type ) {
+      return type === 'display'
+        ? data == null
+          ? data
+          : data.replace(/,/g, ', ')
+        : data;
+    }
+
+    const dataFiles = {
+[%    FOR item IN page_content;
+%]    "[% item.name_lc %]": "/static/[% item.file %]",
+[%    END;
+%]    },
+
+    simpleTableCols = [
+      {
+        data: 'user_genome',
+        title: 'User Genome',
+      },
+      {
+        data: 'classification',
+        title: 'Classification',
+        render: function(data, type) {
+          return semiColonSpacer( data, type )
+        }
+      },
+      {
+        data: 'fastani_reference',
+        title: 'FastANI Reference'
+      },
+      {
+        data: 'fastani_reference_radius',
+        title: 'FastANI reference radius'
+      },
+      { data: 'fastani_taxonomy',
+        title: "FastANI Taxonomy",
+        render: function(data, type) {
+          return semiColonSpacer( data, type )
+        }
+      },
+      {
+        data: 'fastani_ani',
+        title: "FastANI ANI",
+      },
+      {
+        data: 'fastani_af',
+        title: "FastANI AF (Alignment Fraction)",
+      },
+      {
+        data: 'closest_placement_reference',
+        title: 'Closest placement reference'
+      },
+      { data: 'closest_placement_taxonomy',
+        title: 'Closest placement taxonomy',
+        render: function(data, type) {
+          return semiColonSpacer( data, type )
+        }
+      },
+      {
+        data: 'closest_placement_ani',
+        title: 'Closest placement ANI',
+      },
+      {
+        data: 'closest_placement_af',
+        title: 'Closest placement AF (alignment fraction)',
+      },
+      {
+        data: 'classification_method',
+        title: 'Classification method',
+      },
+      {
+        data: 'note',
+        title: 'Note',
+      },
+      { data:
+          'other_related_references(genome_id,species_name,radius,ANI,AF)',
+        title: 'Other related references',
+        render: function(data, type, row, meta) {
+          return type === 'display'
+            ? data === null
+              ? data
+              : data.length > 40
+                ? '<span title="' + data + '">' + data.substr(0, 38) + '...</span>'
+                : data
+            : data;
+        }
+      },
+      {
+        data: 'aa_percent',
+        title: 'AA percent',
+      },
+      {
+        data: 'red_value',
+        title: 'RED value',
+      },
+      {
+        data: 'warnings',
+        title: 'Warnings',
+      },
+    ],
+    markerTableCols = [
+      {
+        data: 'Name',
+        title: 'Name',
+      },
+      {
+        data: 'number_unique_genes',
+        title: 'Number Unique Genes',
+      },
+      {
+        data: 'number_multiple_genes',
+        title: 'Number multiple genes',
+      },
+      {
+        data: 'number_missing_genes',
+        title: 'Number missing genes',
+      },
+      {
+        data: 'list_unique_genes',
+        title: 'Unique genes',
+        render: function(data, type, row, meta) {
+          return commaSpacer(data, type)
+        },
+      },
+      {
+        data: 'list_multiple_genes',
+        title: 'Multiple genes',
+        render: function(data, type, row, meta) {
+          return commaSpacer(data, type)
+        },
+      },
+      {
+        data: 'list_missing_genes',
+        title: 'Missing genes',
+        render: function(data, type, row, meta) {
+          return commaSpacer(data, type)
+        },
+      }
+    ]
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+      const t = e.target.id.substr(0, e.target.id.length-4)
+
+      if ( $('#' + t + '-table') && !$.fn.DataTable.isDataTable('#' + t + '-table') ) {
+        let dataFile = dataFiles[t]
+        $.get(dataFile)
+          .done(function() {
+            let cols = simpleTableCols;
+            if ( t === 'bacteria_marker' || t === 'archaea_marker' ) {
+              cols = markerTableCols;
+            }
+            $('#' + t + '-table').DataTable({
+              ajax: dataFile,
+              dom: 'Bfrtipl',
+              buttons: ['csvHtml5', 'colvis'],
+              columns: cols,
+              lengthMenu: [ [25, 50, -1], [25, 50, "All"] ],
+            });
+          })
+          .fail(function() {
+            $('#' + t + '-table').remove();
+            $('#' + t ).append( 'div' ).text('No results found')
+          });
+      }
+    })
+
+    $('#navigation li:first-child a').tab('show')
+  })
+</script>
+[% END; # end wrapper %]

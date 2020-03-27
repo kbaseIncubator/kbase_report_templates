@@ -1,0 +1,117 @@
+[%
+  page_title = 'Trimmomatic Results';
+  WRAPPER 'views/inc/page_wrapper.tt';
+
+    FOR result IN page_content;
+      # use the BLOCK directive to capture the output of BLOCK trimmomatic_result
+      rendered_content = BLOCK;
+        PROCESS trimmomatic_result;
+      END; # end capturing block
+      result.rendered_content = rendered_content;
+    END;
+
+    PROCESS 'views/inc/macros.tt';
+
+    tabbed_layout( page_content = page_content );
+
+%]
+</div>
+<script>
+  "use strict";
+  $(document).ready(function () {
+    const cols = [
+      {
+        data: "type",
+        title: "Type"
+      },
+      {
+        data: "raw",
+        title: "Raw data",
+      },
+      {
+        data: "perc",
+        title: "Percent",
+      },
+      {
+        data: "bar_chart",
+        title: "Visual Representation",
+        cellClass: 'percent-cell',
+        render: ( data, type ) => {
+          let str = '<div class="progress">' +
+            '<div class="progress-bar" role="progressbar" aria-valuenow="'
+            + data + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + data + '%">'
+            + '<span class="sr-only">' + data + '%</span></div></div>';
+          return str
+        } },
+    ]
+
+    $('table').each( (index, element) => {
+      let id = element.id,
+      table_data = get_data( id );
+      table_data.forEach( el => {
+        el.bar_chart = el.perc
+      } );
+      if ( table_data ) {
+        $('#' + id ).DataTable({
+          dom: 'frt',
+          columns: cols,
+          data: table_data,
+          ordering: false,
+        });
+      }
+    })
+
+    $('#navigation li:first-child a').tab('show')
+
+    function get_data( id ) {
+
+      const data_set = {
+[%      FOR result IN page_content;
+          IF result.data;
+%]      '[% result.name_lc %]-table': [% result.data %],
+[%        END;
+        END; %]
+      }
+
+      if ( ! data_set[ id ] ) {
+        console.error( 'No data found for ' + id )
+        return
+      }
+      return data_set[ id ]
+    }
+  })
+</script>
+[% END; # end page_wrapper
+
+    # default presentation for trimmomatic results
+    # input data structure:
+    # result = {
+    #   name: 'human-comprehensible identifier',
+    #   name_lc: 'URI-friendly unique identifier',
+    #   ref: 'workspace object reference',
+    #   data: [
+    #     # arrays of objects of the form
+    #     { type: "description", raw: #####, perc: ##### }
+    #     # may or may not be present, depending on whether trimmomatic produced results
+    #   ]
+    # }
+
+    BLOCK trimmomatic_result;
+%]
+      <h2>Trimmomatic Results for [% result.name %] (object [% result.reference %])</h2>
+[%
+      IF ! result.data;
+%]
+      <p>All reads were trimmed - no new reads object created.</p>
+[%
+      ELSE;
+        data_table = {
+          for_datatables_js => 1,
+          id                => result.name_lc _ '-table',
+        };
+        PROCESS 'views/inc/table.tt';
+      END; # if result.data
+
+    END; # end BLOCK
+
+%]

@@ -1,0 +1,306 @@
+term_id,term,ontology,num_in_feature_set,num_in_ref_genome,raw_p_value,adjusted_p_value
+GO:0003677,DNA binding,F,31,3092,0.854,1
+GO:0006355,"regulation of transcription, DNA-templated",P,21,2539,0.97,1
+GO:0003723,RNA binding,F,19,924,0.015,0.197
+GO:0004525,ribonuclease III activity,F,3,38,0.0102,0.194
+GO:0005515,protein binding,F,85,8396,0.956,1
+GO:0005524,ATP binding,F,56,3686,0.0319,0.274
+GO:0006396,RNA processing,P,11,582,0.0877,0.414
+GO:0016787,hydrolase activity,F,64,5546,0.605,1
+GO:0016891,"endoribonuclease activity, producing 5'-phosphomonoesters",F,3,45,0.0162,0.197
+GO:0000287,magnesium ion binding,F,1,287,0.968,1
+GO:0004427,inorganic diphosphatase activity,F,1,25,0.257,0.676
+GO:0005737,cytoplasm,C,4,437,0.761,1
+GO:0006796,phosphate-containing compound metabolic process,P,16,3929,1,1
+GO:0016020,membrane,C,6,2394,1,1
+GO:0016021,integral component of membrane,C,5,2375,1,1
+GO:0022857,transmembrane transporter activity,F,5,1469,1,1
+GO:0003676,nucleic acid binding,F,63,5186,0.43,0.852
+GO:0003824,catalytic activity,F,124,17487,1,1
+GO:0006633,fatty acid biosynthetic process,P,1,131,0.79,1
+GO:0008610,lipid biosynthetic process,P,1,457,0.996,1
+GO:0016747,"transferase activity, transferring acyl groups other than amino-acyl groups",F,3,450,0.903,1
+GO:0007165,signal transduction,P,9,1029,0.861,1
+GO:0005506,iron ion binding,F,2,718,0.998,1
+GO:0016705,"oxidoreductase activity, acting on paired donors, with incorporation or reduction of molecular oxygen",F,1,707,1,1
+GO:0020037,heme binding,F,1,852,1,1
+GO:0055114,oxidation-reduction process,P,8,3100,1,1
+GO:0005525,GTP binding,F,6,576,0.678,1
+GO:0003899,DNA-directed RNA polymerase activity,F,1,166,0.862,1
+GO:0006351,"transcription, DNA-templated",P,9,402,0.0513,0.34
+GO:0008270,zinc ion binding,F,10,1925,0.999,1
+GO:0016772,"transferase activity, transferring phosphorus-containing groups",F,26,3967,1,1
+GO:0003700,"transcription factor activity, sequence-specific DNA binding",F,6,1286,0.998,1
+GO:0046983,protein dimerization activity,F,1,847,1,1
+GO:0004190,aspartic-type endopeptidase activity,F,1,207,0.915,1
+GO:0006508,proteolysis,P,9,1293,0.971,1
+GO:0005216,ion channel activity,F,2,197,0.679,1
+GO:0006811,ion transport,P,2,1014,1,1
+GO:0055085,transmembrane transport,P,5,1672,1,1
+GO:0046872,metal ion binding,F,22,4059,1,1
+GO:0010468,regulation of gene expression,P,24,2667,0.937,1
+GO:0008152,metabolic process,P,94,16148,1,1
+GO:0016758,"transferase activity, transferring hexosyl groups",F,6,787,0.905,1
+GO:0004672,protein kinase activity,F,14,2958,1,1
+GO:0006468,protein phosphorylation,P,13,2913,1,1
+GO:0016307,phosphatidylinositol phosphate kinase activity,F,1,55,0.48,0.909
+GO:0046488,phosphatidylinositol metabolic process,P,1,162,0.855,1
+GO:0009058,biosynthetic process,P,20,3090,0.999,1
+GO:0030001,metal ion transport,P,2,374,0.937,1
+GO:0016757,"transferase activity, transferring glycosyl groups",F,6,975,0.975,1
+GO:0016491,oxidoreductase activity,F,8,3498,1,1
+GO:0016746,"transferase activity, transferring acyl groups",F,3,587,0.971,1
+GO:0005215,transporter activity,F,7,1982,1,1
+GO:0006810,transport,P,15,3309,1,1
+GO:0004842,ubiquitin-protein transferase activity,F,4,318,0.52,0.926
+GO:0016567,protein ubiquitination,P,1,271,0.961,1
+GO:0006950,response to stress,P,5,1066,0.996,1
+GO:0006812,cation transport,P,2,671,0.997,1
+GO:0004518,nuclease activity,F,6,304,0.153,0.536
+GO:0006281,DNA repair,P,4,438,0.763,1
+GO:0004252,serine-type endopeptidase activity,F,1,238,0.942,1
+GO:0016887,ATPase activity,F,13,625,0.0367,0.28
+GO:0000413,protein peptidyl-prolyl isomerization,P,3,92,0.0959,0.437
+GO:0003755,peptidyl-prolyl cis-trans isomerase activity,F,3,96,0.106,0.449
+GO:0006457,protein folding,P,6,249,0.0767,0.399
+GO:0003777,microtubule motor activity,F,13,237,5.86e-06,0.000596
+GO:0005871,kinesin complex,C,13,237,5.86e-06,0.000596
+GO:0007018,microtubule-based movement,P,13,237,5.86e-06,0.000596
+GO:0008017,microtubule binding,F,13,276,2.94e-05,0.00149
+GO:0005086,ARF guanyl-nucleotide exchange factor activity,F,1,22,0.23,0.654
+GO:0032012,regulation of ARF protein signal transduction,P,1,22,0.23,0.654
+GO:0050660,flavin adenine dinucleotide binding,F,1,251,0.95,1
+GO:0016192,vesicle-mediated transport,P,4,380,0.659,1
+GO:0005634,nucleus,C,12,1481,0.937,1
+GO:0008168,methyltransferase activity,F,4,649,0.95,1
+GO:0032259,methylation,P,3,140,0.23,0.654
+GO:0004197,cysteine-type endopeptidase activity,F,1,34,0.333,0.747
+GO:0008234,cysteine-type peptidase activity,F,4,215,0.251,0.666
+GO:0050790,regulation of catalytic activity,P,1,85,0.637,1
+GO:0004553,"hydrolase activity, hydrolyzing O-glycosyl compounds",F,5,928,0.986,1
+GO:0005975,carbohydrate metabolic process,P,9,1543,0.995,1
+GO:0004568,chitinase activity,F,2,35,0.0643,0.385
+GO:0006032,chitin catabolic process,P,2,35,0.0643,0.385
+GO:0016998,cell wall macromolecule catabolic process,P,2,39,0.0777,0.399
+GO:0042626,"ATPase activity, coupled to transmembrane movement of substances",F,3,178,0.352,0.776
+GO:0006629,lipid metabolic process,P,5,991,0.992,1
+GO:0006606,protein import into nucleus,P,1,23,0.239,0.654
+GO:0008565,protein transporter activity,F,2,74,0.218,0.646
+GO:0016568,chromatin modification,P,4,166,0.135,0.496
+GO:0005618,cell wall,C,1,231,0.936,1
+GO:0030599,pectinesterase activity,F,1,148,0.829,1
+GO:0042545,cell wall modification,P,1,148,0.829,1
+GO:0006310,DNA recombination,P,2,116,0.399,0.821
+GO:0009378,four-way junction helicase activity,F,2,65,0.179,0.581
+GO:0016301,kinase activity,F,17,3325,1,1
+GO:0005543,phospholipid binding,F,1,94,0.674,1
+GO:0015979,photosynthesis,P,1,142,0.816,1
+GO:0008380,RNA splicing,P,1,129,0.785,1
+GO:0008080,N-acetyltransferase activity,F,3,143,0.24,0.654
+GO:0006139,nucleobase-containing compound metabolic process,P,33,2563,0.332,0.747
+GO:0008026,ATP-dependent helicase activity,F,1,47,0.429,0.852
+GO:0016818,"hydrolase activity, acting on acid anhydrides, in phosphorus-containing anhydrides",F,32,1266,5.69e-05,0.00193
+GO:0043169,cation binding,F,22,4086,1,1
+GO:0006397,mRNA processing,P,3,191,0.394,0.817
+GO:0000160,phosphorelay signal transduction system,P,2,139,0.491,0.917
+GO:0004871,signal transducer activity,F,2,177,0.621,1
+GO:0042254,ribosome biogenesis,P,1,40,0.379,0.803
+GO:0015031,protein transport,P,8,518,0.272,0.697
+GO:0045735,nutrient reservoir activity,F,3,34,0.0075,0.176
+GO:0004674,protein serine/threonine kinase activity,F,1,156,0.844,1
+GO:0043565,sequence-specific DNA binding,F,4,658,0.953,1
+GO:0003993,acid phosphatase activity,F,1,41,0.386,0.806
+GO:0003774,motor activity,F,14,312,2.51e-05,0.00149
+GO:0016459,myosin complex,C,1,75,0.591,1
+GO:0004540,ribonuclease activity,F,3,87,0.0844,0.409
+GO:0006464,cellular protein modification process,P,24,4046,1,1
+GO:0007017,microtubule-based process,P,13,365,0.000466,0.0142
+GO:0006479,protein methylation,P,1,100,0.696,1
+GO:0005985,sucrose metabolic process,P,1,53,0.468,0.903
+GO:0016157,sucrose synthase activity,F,1,33,0.325,0.74
+GO:0007049,cell cycle,P,2,90,0.288,0.708
+GO:0017053,transcriptional repressor complex,C,2,19,0.0209,0.224
+GO:0006352,"DNA-templated transcription, initiation",P,2,120,0.416,0.84
+GO:0008289,lipid binding,F,2,236,0.77,1
+GO:0000439,core TFIIH complex,C,1,24,0.248,0.664
+GO:0006289,nucleotide-excision repair,P,1,55,0.48,0.909
+GO:0004222,metalloendopeptidase activity,F,3,103,0.123,0.475
+GO:0006486,protein glycosylation,P,1,121,0.763,1
+GO:0004970,ionotropic glutamate receptor activity,F,1,85,0.637,1
+GO:0006886,intracellular protein transport,P,7,422,0.235,0.654
+GO:0000148,"1,3-beta-D-glucan synthase complex",C,3,42,0.0134,0.197
+GO:0003843,"1,3-beta-D-glucan synthase activity",F,3,44,0.0152,0.197
+GO:0006075,(1->3)-beta-D-glucan biosynthetic process,P,3,42,0.0134,0.197
+GO:0016779,nucleotidyltransferase activity,F,6,412,0.361,0.778
+GO:0003712,transcription cofactor activity,F,2,137,0.483,0.909
+GO:0004402,histone acetyltransferase activity,F,2,49,0.114,0.458
+GO:0008236,serine-type peptidase activity,F,1,469,0.996,1
+GO:0004386,helicase activity,F,4,202,0.218,0.646
+GO:0005509,calcium ion binding,F,2,227,0.751,1
+GO:0009523,photosystem II,C,1,84,0.632,1
+GO:0009654,photosystem II oxygen evolving complex,C,1,58,0.499,0.917
+GO:0019898,extrinsic component of membrane,C,1,53,0.468,0.903
+GO:0000398,"mRNA splicing, via spliceosome",P,1,101,0.7,1
+GO:0016788,"hydrolase activity, acting on ester bonds",F,10,1393,0.969,1
+GO:0000145,exocyst,C,1,63,0.528,0.931
+GO:0006887,exocytosis,P,1,62,0.522,0.926
+GO:0030246,carbohydrate binding,F,1,304,0.974,1
+GO:0006367,transcription initiation from RNA polymerase II promoter,P,1,29,0.292,0.712
+GO:0000166,nucleotide binding,F,74,5446,0.112,0.458
+GO:0006357,regulation of transcription from RNA polymerase II promoter,P,2,68,0.192,0.598
+GO:0003887,DNA-directed DNA polymerase activity,F,2,36,0.0676,0.389
+GO:0006260,DNA replication,P,1,123,0.769,1
+GO:0008408,3'-5' exonuclease activity,F,1,61,0.516,0.926
+GO:0048193,Golgi vesicle transport,P,1,89,0.654,1
+GO:0051082,unfolded protein binding,F,1,83,0.628,1
+GO:0016987,sigma factor activity,F,1,16,0.173,0.567
+GO:0008233,peptidase activity,F,9,1180,0.94,1
+GO:0016884,"carbon-nitrogen ligase activity, with glutamine as amido-N-donor",F,1,37,0.356,0.776
+GO:0050662,coenzyme binding,F,1,628,0.999,1
+GO:0004812,aminoacyl-tRNA ligase activity,F,2,142,0.502,0.917
+GO:0006418,tRNA aminoacylation for protein translation,P,2,141,0.498,0.917
+GO:0009451,RNA modification,P,1,110,0.73,1
+GO:0016798,"hydrolase activity, acting on glycosyl bonds",F,5,973,0.99,1
+GO:0016773,"phosphotransferase activity, alcohol group as acceptor",F,18,3326,1,1
+GO:0030247,polysaccharide binding,F,1,87,0.645,1
+GO:0005643,nuclear pore,C,2,40,0.0811,0.399
+GO:0034061,DNA polymerase activity,F,2,42,0.0882,0.414
+GO:0006073,cellular glucan metabolic process,P,3,151,0.265,0.688
+GO:0016310,phosphorylation,P,14,3114,1,1
+GO:0043531,ADP binding,F,10,560,0.131,0.495
+GO:0004519,endonuclease activity,F,4,136,0.0785,0.399
+GO:0048544,recognition of pollen,P,1,145,0.822,1
+GO:0035556,intracellular signal transduction,P,2,324,0.898,1
+GO:0006873,cellular ion homeostasis,P,1,28,0.283,0.702
+GO:0016620,"oxidoreductase activity, acting on the aldehyde or oxo group of donors, NAD or NADP as acceptor",F,1,64,0.533,0.934
+GO:0006415,translational termination,P,1,32,0.317,0.732
+GO:0016973,poly(A)+ mRNA export from nucleus,P,1,2,0.0235,0.224
+GO:0016853,isomerase activity,F,6,384,0.303,0.722
+GO:0031047,gene silencing by RNA,P,3,45,0.0162,0.197
+GO:0042393,histone binding,F,1,89,0.654,1
+GO:0008652,cellular amino acid biosynthetic process,P,2,222,0.74,1
+GO:0007010,cytoskeleton organization,P,1,153,0.839,1
+GO:0006913,nucleocytoplasmic transport,P,2,34,0.0611,0.38
+GO:0035091,phosphatidylinositol binding,F,1,30,0.3,0.72
+GO:0006614,SRP-dependent cotranslational protein targeting to membrane,P,1,31,0.309,0.731
+GO:0008312,7S RNA binding,F,1,24,0.248,0.664
+GO:0048500,signal recognition particle,C,1,26,0.266,0.688
+GO:0006807,nitrogen compound metabolic process,P,39,4167,0.952,1
+GO:0004175,endopeptidase activity,F,6,651,0.784,1
+GO:0016573,histone acetylation,P,2,37,0.0709,0.393
+GO:0004003,ATP-dependent DNA helicase activity,F,1,44,0.408,0.83
+GO:0042578,phosphoric ester hydrolase activity,F,3,507,0.94,1
+GO:0016791,phosphatase activity,F,1,414,0.993,1
+GO:0004652,polynucleotide adenylyltransferase activity,F,1,35,0.341,0.759
+GO:0043631,RNA polyadenylation,P,1,41,0.386,0.806
+GO:0009725,response to hormone,P,1,234,0.939,1
+GO:0016820,"hydrolase activity, acting on acid anhydrides, catalyzing transmembrane movement of substances",F,3,215,0.468,0.903
+GO:0031204,"posttranslational protein targeting to membrane, translocation",P,2,16,0.015,0.197
+GO:0003690,double-stranded DNA binding,F,1,140,0.811,1
+GO:0019752,carboxylic acid metabolic process,P,6,992,0.978,1
+GO:0017038,protein import,P,1,67,0.55,0.953
+GO:0016740,transferase activity,F,43,6762,1,1
+GO:0071704,organic substance metabolic process,P,80,11874,1,1
+GO:0005875,microtubule associated complex,C,13,265,1.93e-05,0.00147
+GO:0030117,membrane coat,C,1,110,0.73,1
+GO:0016876,"ligase activity, forming aminoacyl-tRNA and related compounds",F,2,144,0.509,0.924
+GO:0043039,tRNA aminoacylation,P,2,146,0.517,0.926
+GO:0071705,nitrogen compound transport,P,1,131,0.79,1
+GO:0032040,small-subunit processome,C,2,25,0.035,0.274
+GO:0000155,phosphorelay sensor kinase activity,F,1,28,0.283,0.702
+GO:0005516,calmodulin binding,F,1,73,0.581,1
+GO:0032549,ribonucleoside binding,F,73,4834,0.0172,0.197
+GO:0001510,RNA methylation,P,1,28,0.283,0.702
+GO:0005198,structural molecule activity,F,1,896,1,1
+GO:0043139,5'-3' DNA helicase activity,F,1,12,0.133,0.495
+GO:0006520,cellular amino acid metabolic process,P,5,550,0.78,1
+GO:0006891,intra-Golgi vesicle-mediated transport,P,1,9,0.102,0.444
+GO:0019001,guanyl nucleotide binding,F,6,591,0.701,1
+GO:0003747,translation release factor activity,F,1,32,0.317,0.732
+GO:0004348,glucosylceramidase activity,F,1,15,0.163,0.54
+GO:0006665,sphingolipid metabolic process,P,1,19,0.202,0.616
+GO:0006631,fatty acid metabolic process,P,1,174,0.874,1
+GO:0003678,DNA helicase activity,F,3,134,0.212,0.64
+GO:0016817,"hydrolase activity, acting on acid anhydrides",F,33,1307,4.45e-05,0.0017
+GO:0016874,ligase activity,F,3,378,0.826,1
+GO:0044237,cellular metabolic process,P,71,9825,1,1
+GO:0006364,rRNA processing,P,3,73,0.0557,0.361
+GO:0008144,drug binding,F,1,3,0.0351,0.274
+GO:0046907,intracellular transport,P,8,570,0.362,0.778
+GO:0016579,protein deubiquitination,P,2,49,0.114,0.458
+GO:0036459,thiol-dependent ubiquitinyl hydrolase activity,F,2,67,0.188,0.591
+GO:0004527,exonuclease activity,F,2,79,0.24,0.654
+GO:0016810,"hydrolase activity, acting on carbon-nitrogen (but not peptide) bonds",F,1,128,0.782,1
+GO:0006338,chromatin remodeling,P,1,33,0.325,0.74
+GO:0006368,transcription elongation from RNA polymerase II promoter,P,1,11,0.123,0.475
+GO:0016570,histone modification,P,3,117,0.161,0.54
+GO:0016593,Cdc73/Paf1 complex,C,1,13,0.143,0.513
+GO:0032784,"regulation of DNA-templated transcription, elongation",P,2,10,0.0059,0.15
+GO:0008237,metallopeptidase activity,F,3,130,0.2,0.616
+GO:0005694,chromosome,C,1,55,0.48,0.909
+GO:0006259,DNA metabolic process,P,8,649,0.502,0.917
+GO:0006298,mismatch repair,P,1,46,0.422,0.847
+GO:0030983,mismatched DNA binding,F,1,39,0.371,0.791
+GO:0045910,negative regulation of DNA recombination,P,1,5,0.0578,0.367
+GO:0008081,phosphoric diester hydrolase activity,F,2,75,0.222,0.651
+GO:0008889,glycerophosphodiester phosphodiesterase activity,F,2,26,0.0376,0.28
+GO:0003682,chromatin binding,F,1,80,0.614,1
+GO:0016811,"hydrolase activity, acting on carbon-nitrogen (but not peptide) bonds, in linear amides",F,1,49,0.442,0.87
+GO:0003980,UDP-glucose:glycoprotein glucosyltransferase activity,F,1,4,0.0465,0.315
+GO:0019538,protein metabolic process,P,32,6190,1,1
+GO:0009059,macromolecule biosynthetic process,P,16,1617,0.8,1
+GO:0006644,phospholipid metabolic process,P,1,239,0.942,1
+GO:0032502,developmental process,P,1,203,0.911,1
+GO:0016070,RNA metabolic process,P,26,1401,0.0169,0.197
+GO:0051028,mRNA transport,P,1,4,0.0465,0.315
+GO:0051276,chromosome organization,P,3,100,0.116,0.459
+GO:0015631,tubulin binding,F,13,280,3.41e-05,0.00149
+GO:0003916,DNA topoisomerase activity,F,3,36,0.00879,0.179
+GO:0003917,DNA topoisomerase type I activity,F,1,15,0.163,0.54
+GO:0006265,DNA topological change,P,3,36,0.00879,0.179
+GO:0006461,protein complex assembly,P,1,156,0.844,1
+GO:0006826,iron ion transport,P,1,28,0.283,0.702
+GO:0006879,cellular iron ion homeostasis,P,1,12,0.133,0.495
+GO:0008199,ferric iron binding,F,1,14,0.153,0.536
+GO:0006537,glutamate biosynthetic process,P,1,9,0.102,0.444
+GO:0015930,glutamate synthase activity,F,1,9,0.102,0.444
+GO:0016638,"oxidoreductase activity, acting on the CH-NH2 group of donors",F,1,43,0.401,0.821
+GO:0008061,chitin binding,F,2,16,0.015,0.197
+GO:0006555,methionine metabolic process,P,1,23,0.239,0.654
+GO:0030532,small nuclear ribonucleoprotein complex,C,1,37,0.356,0.776
+GO:0008381,mechanically-gated ion channel activity,F,1,4,0.0465,0.315
+GO:0006974,cellular response to DNA damage stimulus,P,4,445,0.773,1
+GO:0003729,mRNA binding,F,1,17,0.183,0.581
+GO:0005685,U1 snRNP,C,1,15,0.163,0.54
+GO:0006376,mRNA splice site selection,P,1,13,0.143,0.513
+GO:0009086,methionine biosynthetic process,P,1,17,0.183,0.581
+GO:0031491,nucleosome binding,F,1,7,0.0799,0.399
+GO:0043044,ATP-dependent chromatin remodeling,P,1,10,0.112,0.458
+GO:0048037,cofactor binding,F,1,864,1,1
+GO:0003918,DNA topoisomerase type II (ATP-hydrolyzing) activity,F,3,25,0.00312,0.0865
+GO:0080019,fatty-acyl-CoA reductase (alcohol-forming) activity,F,1,32,0.317,0.732
+GO:0016879,"ligase activity, forming carbon-nitrogen bonds",F,1,165,0.86,1
+GO:0031167,rRNA methylation,P,1,8,0.0908,0.42
+GO:0008184,glycogen phosphorylase activity,F,1,4,0.0465,0.315
+GO:0004820,glycine-tRNA ligase activity,F,1,2,0.0235,0.224
+GO:0006426,glycyl-tRNA aminoacylation,P,1,2,0.0235,0.224
+GO:0006605,protein targeting,P,2,60,0.158,0.54
+GO:0043141,ATP-dependent 5'-3' DNA helicase activity,F,1,6,0.0689,0.389
+GO:0030154,cell differentiation,P,1,3,0.0351,0.274
+GO:0042761,very long-chain fatty acid biosynthetic process,P,1,3,0.0351,0.274
+GO:0048513,animal organ development,P,1,6,0.0689,0.389
+GO:0052689,carboxylic ester hydrolase activity,F,1,211,0.919,1
+GO:0032968,positive regulation of transcription elongation from RNA polymerase II promoter,P,1,3,0.0351,0.274
+GO:0006725,cellular aromatic compound metabolic process,P,33,2867,0.59,1
+GO:0005085,guanyl-nucleotide exchange factor activity,F,1,67,0.55,0.953
+GO:0051716,cellular response to stimulus,P,4,487,0.829,1
+GO:0042623,"ATPase activity, coupled",F,7,336,0.106,0.449
+GO:0044238,primary metabolic process,P,78,11297,1,1
+GO:0048208,COPII vesicle coating,P,1,7,0.0799,0.399
+GO:0043231,intracellular membrane-bounded organelle,C,12,1865,0.994,1
+GO:0009966,regulation of signal transduction,P,1,30,0.3,0.72
+GO:0019509,L-methionine biosynthetic process from methylthioadenosine,P,1,7,0.0799,0.399
+GO:0006491,N-glycan processing,P,1,2,0.0235,0.224
+GO:0000042,protein targeting to Golgi,P,1,3,0.0351,0.274
+GO:0001882,nucleoside binding,F,73,4837,0.0174,0.197
+GO:0009521,photosystem,C,1,124,0.772,1

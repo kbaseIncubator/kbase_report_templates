@@ -1,0 +1,92 @@
+[%  include_dsv_parser = 1;
+    page_title = 'HMMer MSA Prot-Prot Search Results';
+
+    WRAPPER 'views/inc/page_wrapper.tt';
+    PROCESS 'views/inc/macros.tt';
+
+    table_id = 'hmmer-table';
+    page_content = [
+        {   name      => page_title,
+            name_lc   => "hmmer",
+            content   => 'table',
+            table_config => {
+              id                => table_id,
+              for_datatables_js => 1,
+            }
+        },
+    ];
+
+    tabbed_layout( page_content = page_content );
+%]
+</div>
+<script>
+  "use strict";
+  $(document).ready(function () {
+    const MIN_BIT_SCORE = 100,
+    cols = [
+      { data: "alignment_coverage",
+        title: "Alignment coverage",
+        orderable: false,
+        render: ( data, type, row, meta ) => {
+          if (type !== 'display')
+            return data
+          let length = data[0]*1 + data[1]*1
+
+          return '<div class="progress">' +
+            '<div class="progress-bar progress-bar-null" style="width: ' + data[0] + '%"></div>'
+            + '<div class="progress-bar" role="progressbar" style="width: ' + data[1] + '%">'
+            + '<span class="sr-only">match: ' + data[0] + "%-" + length + '%</span></div>'
+            + '</div>';
+        },
+      },
+      {
+        data: "gene_id",
+        title: "Gene ID",
+      },
+      {
+        data: "function",
+        title: "Function",
+      },
+      {
+        data: "genome",
+        title: "Genome",
+      },
+      { data: "aln_len",
+        title: "Align. len.",
+      },
+      { data: "e-value",
+        title: "e-value"
+      },
+      { data: "bit_score",
+        title: "Bit score",
+      },
+      { data: "h_beg-h_end",
+        title: "H-beg - H-end",
+      },
+    ],
+    tableConfig = {
+      dom: 'Bfrtipl',
+      buttons: ['csvHtml5'],
+      lengthMenu: [ [25, 50, -1], [25, 50, "All"] ],
+      columns: cols,
+      createdRow: function( row, data ) {
+        if ( data.bit_score < MIN_BIT_SCORE ) {
+          $(row).addClass( 'danger' );
+        }
+      },
+      order: [[ 7, "asc" ]],
+    }
+
+    d3.tsv("/static/hmmer.tsv").then(function(data) {
+      data.forEach( d => {
+        // convert left/middle/right into appropriate things
+        d.alignment_coverage = [ d.left, d.middle, d.right ]
+      } )
+
+      tableConfig.data = data
+      $('#[% table_id %]').DataTable(tableConfig);
+    });
+  })
+</script>
+[% END; # end wrapper %]
+
