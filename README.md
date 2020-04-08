@@ -1,3 +1,6 @@
+# KBase Report Templates
+
+This repository contains templates for generating KBase HTML reports.
 
 Reports are generated using [Template Toolkit](http://www.template-toolkit.org), a templating library available in both [python](https://github.com/lmr/Template-Toolkit-Python) and perl. Comprehensive documentation for the perl version is [available
 online](http://www.template-toolkit.org/docs/manual/index.html) and is easier to access
@@ -8,9 +11,16 @@ Data are presented using [DataTables](https://datatables.net), a javascript libr
 
 ## Developing new templates
 
-Creating new templates can often involve trial and error, and setting up a script to allow you to test your templates before you integrate them into a KBase app will save a lot of time and tears. The included script `app.py` launches a lightweight [Bottle](https://bottlepy.org/) server that you can use to test out your new template. Follow the [bottle installation instructions](https://bottlepy.org/docs/0.12/tutorial.html#installation), and then install Template Toolkit (e.g. using `pip install -U Template-Toolkit-Python`). Start the server by running `python app.py`, and go to `http://localhost:9090/` to see the server index page. A number of example templates used to generate KBase reports are provided to help you get started.
+Creating new templates can often involve trial and error, and setting up a script to allow you to test your templates before you integrate them into a KBase app will save a lot of time and tears. The included script `app.py` launches a lightweight [Bottle](https://bottlepy.org/) server that you can use to test out your new template. 
 
+Follow the [bottle installation instructions](https://bottlepy.org/docs/0.12/tutorial.html#installation), and then install Template Toolkit (e.g. using `pip install -U Template-Toolkit-Python`). Start the server by running `python app.py`, and go to `http://localhost:9090/` to see the server index page. A number of example templates used to generate KBase reports are provided to help you get started.
 
+### Sample installation instructions
+
+    virtualenv develop                  # Create virtual environment
+    $ source develop/bin/activate       # Change default python to virtual one
+    (develop)$ pip install -U bottle Template-Toolkit-Python
+    (develop)$ python app.py            # Start server
 
 ## Prepare your data for tabulation
 
