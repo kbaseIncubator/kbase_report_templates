@@ -1,0 +1,32 @@
+[%
+
+    page_title        = 'Your title here';
+    data_file         = '/path/to/data.tsv';
+    data_file_format  = 'tsv'
+
+    PROCESS 'views/inc/macros.tt';
+    WRAPPER 'views/inc/page_wrapper.tt';
+
+    table_id = 'single_table_on_page-table';
+
+    page_content = [
+      {
+        name    => 'Table Tab Title Here',
+        name_lc => 'single_table_on_page',
+        content => 'table',
+        table_config => {
+          id                => table_id,
+          for_datatables_js => 1,
+        },
+      }
+    ];
+
+    tabbed_layout( page_content = page_content );
+
+    PROCESS 'views/inc/js.tt';
+
+    END; # end wrapper
+
+%]
+
+

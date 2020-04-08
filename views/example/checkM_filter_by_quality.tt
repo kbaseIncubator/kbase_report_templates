@@ -1,9 +1,14 @@
 [%
     include_dsv_parser = 1;
-    page_title = 'CheckM Quality Report';
-    WRAPPER 'views/inc/page_wrapper.tt';
 
+    page_title        = 'CheckM Quality Report';
+    data_file         = '/static/data/CheckM_summary_table.tsv';
+    data_file_format  = 'tsv';
+    table_id          = 'checkm_tabular-table';
+
+    WRAPPER 'views/inc/page_wrapper.tt';
     PROCESS 'views/inc/macros.tt';
+    PROCESS 'views/inc/js.tt';
 
     page_content = [
       {
@@ -12,7 +17,7 @@
         content => 'image',
         config  => {
           img_alt => 'Visual representation of CheckM results',
-          img_src => '/static/checkM_filter_bin_qa_plot.png',
+          img_src => '/static/data/checkM_filter_bin_qa_plot.png',
           caption => '<p>Some sort of caption here</p>',
         },
       },
@@ -21,7 +26,7 @@
         name_lc => 'checkm_tabular',
         content => 'table',
         table_config => {
-          id                => "checkm_tabular-table",
+          id                => table_id,
           for_datatables_js => 1,
         },
       },
@@ -30,10 +35,10 @@
     tabbed_layout( page_content = page_content );
 
 %]
-</div>
 <script>
   "use strict";
   $(document).ready(function () {
+
     const cols = [
       "Bin Name",
       "Marker Lineage",
@@ -56,22 +61,16 @@
       return '<a href="' + data + '.html">' + data + '</a>'
     }
 
-    const tableConfig = {
-      dom: 'Bfrtipl',
-      buttons: ['csvHtml5'],
-      lengthMenu: [ [25, 50, -1], [25, 50, "All"] ],
-      columns: cols,
-      createdRow: function( row, data ) {
-        if ( data[ 'Contamination' ] > 1.0 ) {
-          $(row).addClass( 'danger' );
-        }
-      },
+    [% PROCESS default_table_conf %]
+    tableConfig.createdRow = function( row, data ) {
+      if ( data[ 'Contamination' ] > 1.0 ) {
+        $(row).addClass( 'danger' );
+      }
     }
-    d3.tsv('/static/CheckM_summary_table.tsv').then(function(data) {
-      tableConfig.data = data
-      $('#checkm_tabular-table').DataTable(tableConfig);
-    });
+    [% PROCESS default_data_load %]
+
     $('#navigation li:first-child a').tab('show')
+
   })
 </script>
 [%

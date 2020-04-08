@@ -1,10 +1,14 @@
 [%  include_dsv_parser = 1;
-    page_title = 'HMMer MSA Prot-Prot Search Results';
+
+    page_title        = 'HMMer MSA Prot-Prot Search Results';
+    table_id          = 'hmmer-table';
+    data_file         = '/static/data/hmmer.tsv';
+    data_file_format  = 'tsv';
 
     WRAPPER 'views/inc/page_wrapper.tt';
     PROCESS 'views/inc/macros.tt';
+    PROCESS 'views/inc/js.tt';
 
-    table_id = 'hmmer-table';
     page_content = [
         {   name      => page_title,
             name_lc   => "hmmer",
@@ -18,26 +22,28 @@
 
     tabbed_layout( page_content = page_content );
 %]
-</div>
 <script>
   "use strict";
   $(document).ready(function () {
+
+    function renderProgressBar( data, type ){
+      if (type !== 'display')
+        return data
+      let length = data[0]*1 + data[1]*1
+
+      return '<div class="progress">' +
+        '<div class="progress-bar progress-bar-null" style="width: ' + data[0] + '%"></div>'
+        + '<div class="progress-bar" role="progressbar" style="width: ' + data[1] + '%">'
+        + '<span class="sr-only">match: ' + data[0] + "%-" + length + '%</span></div>'
+        + '</div>';
+    }
+
     const MIN_BIT_SCORE = 100,
     cols = [
       { data: "alignment_coverage",
         title: "Alignment coverage",
         orderable: false,
-        render: ( data, type, row, meta ) => {
-          if (type !== 'display')
-            return data
-          let length = data[0]*1 + data[1]*1
-
-          return '<div class="progress">' +
-            '<div class="progress-bar progress-bar-null" style="width: ' + data[0] + '%"></div>'
-            + '<div class="progress-bar" role="progressbar" style="width: ' + data[1] + '%">'
-            + '<span class="sr-only">match: ' + data[0] + "%-" + length + '%</span></div>'
-            + '</div>';
-        },
+        render: renderProgressBar,
       },
       {
         data: "gene_id",
@@ -63,21 +69,19 @@
       { data: "h_beg-h_end",
         title: "H-beg - H-end",
       },
-    ],
-    tableConfig = {
-      dom: 'Bfrtipl',
-      buttons: ['csvHtml5'],
-      lengthMenu: [ [25, 50, -1], [25, 50, "All"] ],
-      columns: cols,
-      createdRow: function( row, data ) {
-        if ( data.bit_score < MIN_BIT_SCORE ) {
-          $(row).addClass( 'danger' );
-        }
-      },
-      order: [[ 7, "asc" ]],
-    }
+    ]
 
-    d3.tsv("/static/hmmer.tsv").then(function(data) {
+[%  PROCESS default_table_conf %]
+
+    tableConfig.createdRow = function( row, data ) {
+      if ( data.bit_score < MIN_BIT_SCORE ) {
+        $(row).addClass( 'danger' );
+      }
+    }
+    tableConfig.order = [[ 7, "asc" ]]
+[%
+    WRAPPER dsv_wrapper;
+%]
       data.forEach( d => {
         // convert left/middle/right into appropriate things
         d.alignment_coverage = [ d.left, d.middle, d.right ]
@@ -85,7 +89,9 @@
 
       tableConfig.data = data
       $('#[% table_id %]').DataTable(tableConfig);
-    });
+[%
+    END; # dsv_wrapper
+%]
   })
 </script>
 [% END; # end wrapper %]

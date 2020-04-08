@@ -1,15 +1,20 @@
 [%  include_dsv_parser = 1;
-    page_title = 'BLASTp Results';
+
+    page_title        = 'BLASTp Results';
+    table_id          = 'blastp_results-table';
+    data_file         = '/static/data/kb_blast_BLASTp_Search.tsv';
+    data_file_format  = 'tsv';
 
     WRAPPER 'views/inc/page_wrapper.tt';
     PROCESS 'views/inc/macros.tt';
+    PROCESS 'views/inc/js.tt';
 
     page_content = [
         {   name      => page_title,
             name_lc   => "blastp_results",
             content   => 'table',
             table_config => {
-              id                => "blastp_results-table",
+              id                => table_id,
               for_datatables_js => 1,
             }
         },
@@ -21,21 +26,24 @@
 <script>
   "use strict";
   $(document).ready(function () {
+
+    function renderMatchBar(data, type){
+      if (type !== 'display')
+        return data
+      let length = data[0]*1 + data[1]*1
+
+      return '<div class="progress">' +
+        '<div class="progress-bar progress-bar-null" style="width: ' + data[0] + '%"></div>'
+        + '<div class="progress-bar" role="progressbar" style="width: ' + data[1] + '%">'
+        + '<span class="sr-only">match: ' + data[0] + "%-" + length + '%</span></div>'
+        + '</div>';
+    }
+
     const cols = [
       { data: "alignment_coverage",
         title: "Alignment coverage",
         orderable: false,
-        render: ( data, type, row, meta ) => {
-          if (type !== 'display')
-            return data
-          let length = data[0]*1 + data[1]*1
-
-          return '<div class="progress">' +
-            '<div class="progress-bar progress-bar-null" style="width: ' + data[0] + '%"></div>'
-            + '<div class="progress-bar" role="progressbar" style="width: ' + data[1] + '%">'
-            + '<span class="sr-only">match: ' + data[0] + "%-" + length + '%</span></div>'
-            + '</div>';
-        },
+        render: renderMatchBar,
       },
       {
         data: "gene_id",
@@ -70,22 +78,18 @@
       { data: "gap_open",
         title: "Gap open",
       },
-    ],
+    ]
 
-    tableConfig = {
-      dom: 'Bfrtip',
-      buttons: ['csvHtml5', 'colvis'],
-      lengthMenu: [ [25, 50, -1], [25, 50, "All"] ],
-      columns: cols,
-      createdRow: function( row, data ) {
-        if ( data.passes_criteria === "false" ) {
-          $(row).addClass( 'danger' );
-        }
-      },
-      order: [[ 1, "asc" ]],
+[%  PROCESS default_table_conf %]
+
+    tableConfig.createdRow = function( row, data ) {
+      if ( data.passes_criteria === "false" ) {
+        $(row).addClass( 'danger' );
+      }
     }
+    tableConfig.order = [[ 1, "asc" ]]
 
-    d3.tsv("/static/kb_blast_BLASTp_Search.tsv").then(function(data) {
+[%  WRAPPER dsv_wrapper %]
       data.forEach( d => {
         // convert left/middle/right into appropriate things
         d.alignment_coverage = [ d.left, d.middle, d.right ]
@@ -94,8 +98,10 @@
       } )
 
       tableConfig.data = data
-      $('#blastp_results-table').DataTable(tableConfig);
-    });
+      $('#[% table_id %]').DataTable(tableConfig);
+[%
+    END;
+%]
   })
 </script>
 [% END; # end wrapper %]

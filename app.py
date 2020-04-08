@@ -1,28 +1,42 @@
 from bottle import route, run, static_file
 from template import Template
 from template.util import TemplateException
-import json
+
+
+def render_template(template_name, template_data={}):
+    template = Template({
+        ABSOLUTE: 1,
+        INCLUDE_PATH: 'views/:.',
+        TRIM: 1,
+    })
+    try:
+        page = template.process('views/' + template_name + '.tt', template_data)
+        return page
+    except TemplateException as e:
+        print("ERROR: %s" % e)
+
 
 @route('/static/<filename:path>')
 def send_static(filename):
     return static_file(filename, root='static')
 
+
 @route('/')
 @route('/index')
 def index_route():
-    return render_template( 'index' )
-
-@route('/kb_fastANI')
-def kb_fastANI():
+    return render_template('index')
 
 
-    return render_template( 'kb_fastANI', tmpl_data )
+# @route('/starter_templates/<template_name>')
+# def default_route(template_name):
+#     return render_template( template_name )
 
-@route('/kb_uploadmethods_genbank')
-def kb_uploadmethods_genbank():
+
+@route('/example/kb_uploadmethods_import_genbank')
+def kb_uploadmethods_import_genbank():
 
     tmpl_data = {
-        overview: [
+        'upload_data': [
             [ "Name", "Escherichia_coli_str_K-12_MG1655 (55494/26/3)" ],
             [ "Date Uploaded", "Sat Feb 22 19:08:55 2020" ],
             [ "Source", "RefSeq" ],
@@ -44,18 +58,28 @@ def kb_uploadmethods_genbank():
             [ "tRNA", "89" ],
             [ "tmRNA", "2" ],
         ],
-        stats: {
-            genome_features: [
-                ['CDS', 4319], ['misc_feature', 11], ['mobile_element', 49], ['ncRNA', 65], ['non_coding_features', 773], ['non_coding_genes', 179], ['protein_encoding_gene', 4319], ['rRNA', 22], ['rep_origin', 1], ['repeat_region', 355], ['tRNA', 89], ['tmRNA', 2]
-            ],
-            contig_length: [
-                ['NC_000913.3', 4641652],
-                ['NC_002381.7', 82981],
-            ]
-        }
+        'genome_features': [
+            ['CDS', 4319],
+            ['misc_feature', 11],
+            ['mobile_element', 49],
+            ['ncRNA', 65],
+            ['non_coding_features', 773],
+            ['non_coding_genes', 179],
+            ['protein_encoding_gene', 4319],
+            ['rRNA', 22],
+            ['rep_origin', 1],
+            ['repeat_region', 355],
+            ['tRNA', 89],
+            ['tmRNA', 2]
+        ],
+        'contig_length': [
+            ['NC_000913.3', 4641652],
+            ['NC_002381.7', 82981],
+        ]
     }
 
-    return render_template( 'kb_uploadmethods_genbank', tmpl_data )
+    return render_template('example/kb_uploadmethods_import_genbank', tmpl_data)
+
 
 @route('/example/kb_trimmomatic')
 def kb_trimmomatic():
@@ -83,14 +107,15 @@ def kb_trimmomatic():
                 { 'type': 'Reverse Only Surviving', 'raw': 0, 'perc': 0},
                 { 'type': 'Dropped', 'raw': 0, 'perc': 0 },
             ],
-        },{
+        }, {
             'reference': '29142/17/12',
             'name': 'doomed_to_fail.fastq.gz_reads',
             'name_lc': 'ref_29142_17_12',
         }]
     }
 
-    return render_template( 'example/kb_trimmomatic', tmpl_data )
+    return render_template('example/kb_trimmomatic', tmpl_data)
+
 
 @route('/example/kb_trimmomatic_single')
 def kb_trimmomatic_single():
@@ -110,20 +135,12 @@ def kb_trimmomatic_single():
         }],
     }
 
-    return render_template( 'example/kb_trimmomatic', tmpl_data )
+    return render_template('example/kb_trimmomatic', tmpl_data)
+
 
 @route('/example/<template_name>')
 def default_route(template_name):
-    return render_template( 'example/' + template_name )
+    return render_template('example/' + template_name)
 
-def render_template(template_name, template_data = {}):
-
-    template = Template()
-
-    try:
-        page = template.process( 'views/' + template_name + '.tt', template_data )
-        return page
-    except TemplateException as e:
-        print("ERROR: %s" % e)
 
 run(host='localhost', port=9090, debug=True, reloader=True)

@@ -1,6 +1,7 @@
 [%
-  page_title = 'Trimmomatic Results';
-  WRAPPER 'views/inc/page_wrapper.tt';
+    page_title = 'Trimmomatic Results';
+    WRAPPER 'views/inc/page_wrapper.tt';
+    PROCESS 'views/inc/macros.tt';
 
     FOR result IN page_content;
       # use the BLOCK directive to capture the output of BLOCK trimmomatic_result
@@ -10,12 +11,10 @@
       result.rendered_content = rendered_content;
     END;
 
-    PROCESS 'views/inc/macros.tt';
 
     tabbed_layout( page_content = page_content );
 
 %]
-</div>
 <script>
   "use strict";
   $(document).ready(function () {
@@ -81,7 +80,11 @@
     }
   })
 </script>
-[% END; # end page_wrapper
+[%
+  END; # end page_wrapper
+
+
+    BLOCK trimmomatic_result;
 
     # default presentation for trimmomatic results
     # input data structure:
@@ -95,8 +98,6 @@
     #     # may or may not be present, depending on whether trimmomatic produced results
     #   ]
     # }
-
-    BLOCK trimmomatic_result;
 %]
       <h2>Trimmomatic Results for [% result.name %] (object [% result.reference %])</h2>
 [%

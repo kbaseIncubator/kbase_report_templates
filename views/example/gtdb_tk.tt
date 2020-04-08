@@ -1,6 +1,8 @@
 [%
     page_title = 'GTDB-tk Results';
+
     WRAPPER 'views/inc/page_wrapper.tt';
+    PROCESS 'views/inc/macros.tt';
 
     # table layout bits
     simpleTableCols = [
@@ -83,12 +85,9 @@
       item.table_config.caption = 'GTDB-tk results: ' _ item.name;
     END;
 
-    PROCESS 'views/inc/macros.tt';
-
     tabbed_layout( page_content = page_content );
 
 %]
-</div>
 <script>
   $(document).ready(function () {
 
@@ -108,9 +107,19 @@
         : data;
     }
 
+    function dotDotDot( data, type ) {
+      return type === 'display'
+        ? data === null
+          ? data
+          : data.length > 40
+            ? '<span title="' + data + '">' + data.substr(0, 38) + '...</span>'
+            : data
+        : data;
+    }
+
     const dataFiles = {
 [%    FOR item IN page_content;
-%]    "[% item.name_lc %]": "/static/[% item.file %]",
+%]    "[% item.name_lc %]": "/static/data/[% item.file %]",
 [%    END;
 %]    },
 
@@ -122,9 +131,7 @@
       {
         data: 'classification',
         title: 'Classification',
-        render: function(data, type) {
-          return semiColonSpacer( data, type )
-        }
+        render: semiColonSpacer,
       },
       {
         data: 'fastani_reference',
@@ -136,9 +143,7 @@
       },
       { data: 'fastani_taxonomy',
         title: "FastANI Taxonomy",
-        render: function(data, type) {
-          return semiColonSpacer( data, type )
-        }
+        render: semiColonSpacer,
       },
       {
         data: 'fastani_ani',
@@ -154,9 +159,7 @@
       },
       { data: 'closest_placement_taxonomy',
         title: 'Closest placement taxonomy',
-        render: function(data, type) {
-          return semiColonSpacer( data, type )
-        }
+        render: semiColonSpacer,
       },
       {
         data: 'closest_placement_ani',
@@ -177,15 +180,7 @@
       { data:
           'other_related_references(genome_id,species_name,radius,ANI,AF)',
         title: 'Other related references',
-        render: function(data, type, row, meta) {
-          return type === 'display'
-            ? data === null
-              ? data
-              : data.length > 40
-                ? '<span title="' + data + '">' + data.substr(0, 38) + '...</span>'
-                : data
-            : data;
-        }
+        render: dotDotDot,
       },
       {
         data: 'aa_percent',
@@ -220,23 +215,17 @@
       {
         data: 'list_unique_genes',
         title: 'Unique genes',
-        render: function(data, type, row, meta) {
-          return commaSpacer(data, type)
-        },
+        render: commaSpacer,
       },
       {
         data: 'list_multiple_genes',
         title: 'Multiple genes',
-        render: function(data, type, row, meta) {
-          return commaSpacer(data, type)
-        },
+        render: commaSpacer,
       },
       {
         data: 'list_missing_genes',
         title: 'Missing genes',
-        render: function(data, type, row, meta) {
-          return commaSpacer(data, type)
-        },
+        render: commaSpacer,
       }
     ]
 
@@ -245,24 +234,17 @@
 
       if ( $('#' + t + '-table') && !$.fn.DataTable.isDataTable('#' + t + '-table') ) {
         let dataFile = dataFiles[t]
-        $.get(dataFile)
-          .done(function() {
-            let cols = simpleTableCols;
-            if ( t === 'bacteria_marker' || t === 'archaea_marker' ) {
-              cols = markerTableCols;
-            }
-            $('#' + t + '-table').DataTable({
-              ajax: dataFile,
-              dom: 'Bfrtipl',
-              buttons: ['csvHtml5', 'colvis'],
-              columns: cols,
-              lengthMenu: [ [25, 50, -1], [25, 50, "All"] ],
-            });
-          })
-          .fail(function() {
-            $('#' + t + '-table').remove();
-            $('#' + t ).append( 'div' ).text('No results found')
-          });
+        let cols = simpleTableCols;
+        if ( t === 'bacteria_marker' || t === 'archaea_marker' ) {
+          cols = markerTableCols;
+        }
+        $('#' + t + '-table').DataTable({
+          ajax: dataFile,
+          dom: 'Bfrtipl',
+          buttons: ['csvHtml5', 'colvis'],
+          columns: cols,
+          lengthMenu: [ [25, 50, -1], [25, 50, "All"] ],
+        });
       }
     })
 

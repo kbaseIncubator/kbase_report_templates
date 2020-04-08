@@ -1,0 +1,121 @@
+[%
+  page_title = 'Import Genbank file';
+  WRAPPER 'views/inc/page_wrapper.tt';
+  PROCESS 'views/inc/macros.tt';
+
+  page_content = [
+      {   name    => "Overview",
+          name_lc => "overview",
+          content => 'table',
+          table_config  => {
+            id                => 'overview-table',
+            thead             => {
+              enum => [ 'Attribute', 'Value' ],
+            },
+            for_datatables_js => 1,
+          }
+      },
+      {
+          name    => 'Stats',
+          name_lc => 'stats',
+          rendered_content => '
+          <div class="row">
+            <div class="col-md-6" id="feature_chart_div"></div>
+            <div class="col-md-6" id="contig_chart_div"></div>
+          </div>'
+      }
+  ];
+
+  tabbed_layout( page_content = page_content );
+%]
+<!--Load the AJAX API-->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+  "use strict";
+  $(document).ready(function () {
+    const table_data = [
+    [%
+      FOR item IN upload_data; %]
+      ["[% item.first %]", "[% item.last %]"],[%
+      END; %]
+    ],
+    table_data_obj = {
+    [%
+      FOR item IN upload_data; %]
+      "[% item.first %]": "[% item.last %]",[%
+      END; %]
+    }
+
+    $( '#overview-table' ).DataTable({
+      dom: 't',
+      columns: [
+        { title: 'Attribute' },
+        { title: 'Value' },
+      ],
+      data: table_data,
+      ordering: false,
+      paging: false,
+    });
+
+    google.charts.load('current', {'packages':['corechart']});
+
+    google.charts.setOnLoadCallback(drawFeatures);
+    google.charts.setOnLoadCallback(drawContigs);
+
+    function drawFeatures() {
+
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Type');
+      data.addColumn('number', 'Count');
+      data.addRows([[%
+        FOR feature IN genome_features;
+          '["' _ feature.join('",') _ '],';
+        END;
+      %]]);
+
+      var options = {
+        'title':    'Genome Features',
+        'fontSize': 14,
+        'width':    600,
+        'height':   500,
+      };
+
+      var chart = new google.visualization.PieChart(
+        document.getElementById( 'feature_chart_div' )
+      );
+      chart.draw(data, options);
+    }
+
+    function drawContigs() {
+
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Type');
+      data.addColumn('number', 'Size');
+
+      data.addRows([[%
+      FOR length IN contig_length;
+      '["' _ length.join('",') _ '],';
+      END;
+       %]]);
+      var options = {
+        'title':    'Contig Length',
+        'legend':   { 'position': 'none' },
+        'hAxis':    { 'slantedText': 1 },
+        'fontSize': 14,
+        'width':    600,
+        'height':   500,
+      };
+
+      var chart = new google.visualization.Histogram(
+        document.getElementById('contig_chart_div')
+      );
+      chart.draw(data, options);
+    }
+
+    $('#navigation li:first-child a').tab('show')
+  })
+</script>
+[%
+  END # end wrapper
+%]
+

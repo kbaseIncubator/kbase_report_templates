@@ -1,0 +1,62 @@
+[%
+    include_dsv_parser = 1;
+    page_title = 'Your title here';
+
+    WRAPPER 'views/inc/page_wrapper.tt';
+    PROCESS 'views/inc/macros.tt';
+
+    table_id = 'results-table';
+    page_content = [
+      {
+        name    => 'Results', # text displayed on the tab
+        name_lc => 'results',
+        content => 'table',
+        table_config => {
+          id                => table_id,
+          for_datatables_js => 1,
+        },
+      },
+      {
+        name    => 'Picture tab',
+        name_lc => 'picture',
+        content => 'image',
+        config  => {
+          img_alt => 'text describing image',
+          img_src => '/path/to/image.jpg',
+          caption => '<p>Some sort of caption here</p>',
+        },
+      },
+    ];
+
+    tabbed_layout( page_content = page_content );
+
+    js_table
+
+%]
+<script>
+  "use strict";
+  $(document).ready(function () {
+    const cols = [
+      { data: 'name', title: 'Name of shape' },
+      { data: 'height', title: 'Height (cm)' },
+      { data: 'width', title: 'Width (cm)' },
+      { data: 'area', title: 'Area (cm<sup>2</sup>)' },
+    ];
+
+    const tableConfig = {
+      dom: 'Bfrtipl',
+      buttons: ['csvHtml5'],
+      lengthMenu: [ [25, 50, -1], [25, 50, "All"] ],
+      columns: cols,
+    }
+    d3.tsv('/path/to/datafile.tsv').then(function(data) {
+      tableConfig.data = data
+      $('#[% results-table %]').DataTable(tableConfig);
+    });
+    $('#navigation li:first-child a').tab('show')
+  })
+</script>
+[%
+    END; # end wrapper
+
+%]
