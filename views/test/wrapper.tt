@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+[%
+    PROCESS 'views/test/page_head.tt';
+%]
+  <title>[% page_title %]</title>
+</head>
+<body>
+<div class="container-fluid kb-html-report">
+[%
+    PROCESS 'views/inc/template_name.tt';
+    content; # the page content
+%]
+</div>
+</body>
+</html>

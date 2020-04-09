@@ -1,0 +1,10 @@
+[%
+    WRAPPER 'views/test/wrapper.tt';
+%]
+<h1>[% page_title %]</h1>
+<div>This is a test.</div>
+<div>The value is [% value %]</div>
+[%
+    END; # end wrapper
+
+%]

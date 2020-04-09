@@ -5,9 +5,10 @@ from template.util import TemplateException
 
 def render_template(template_name, template_data={}):
     template = Template({
-        ABSOLUTE: 1,
-        INCLUDE_PATH: 'views/:.',
-        TRIM: 1,
+        'ABSOLUTE': 1,
+        'RELATIVE': 1,
+        'INCLUDE_PATH': 'views/:.',
+        'TRIM': 1,
     })
     try:
         page = template.process('views/' + template_name + '.tt', template_data)
@@ -15,6 +16,10 @@ def render_template(template_name, template_data={}):
     except TemplateException as e:
         print("ERROR: %s" % e)
 
+
+@route('/test')
+def test_route():
+    return render_template('test/test_template')
 
 @route('/static/<filename:path>')
 def send_static(filename):
