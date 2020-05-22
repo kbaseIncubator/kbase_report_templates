@@ -1,7 +1,8 @@
 from bottle import route, run, static_file
 from template import Template
 from template.util import TemplateException
-
+import os
+from html import escape
 
 def render_template(template_name, template_data={}):
     template = Template({
@@ -19,22 +20,63 @@ def render_template(template_name, template_data={}):
 
 @route('/test')
 def test_route():
+
+    file_suffix = 1
+    for datum in [
+        [ 'none', {} ],
+        [ 'title', { 'page_title': 'My First Template' }, ],
+        [ 'content', { 'value': ['this', 'that', 'the other'] }, ],
+        ]:
+
+        template_string = render_template('test/test_template', datum[1])
+
+        # ensure any subdirs are created
+        output_file = 'tmpl_output_' + datum[0] + '.txt'
+        dir_path = os.path.dirname(output_file)
+        with open(output_file, 'w') as f:
+            f.write(template_string)
+
+        file_suffix += 1
+
     return render_template('test/test_template')
 
+@route('/narrative/static/style/style.min.css')
+def style_min():
+    return static_file('css/style.css', root='static')
+
+@route('/narrative/static/kbase/css/kbaseStylesheet.css')
+def kbaseStylesheet():
+    return static_file('css/kbaseStylesheet.css', root='static')
+
 @route('/static/<filename:path>')
+# @route('/narrative/static/<filename:path>')
 def send_static(filename):
     return static_file(filename, root='static')
-
 
 @route('/')
 @route('/index')
 def index_route():
     return render_template('index')
 
+@route('/starter_templates/<template_name>')
+def default_route(template_name):
+    return render_template( 'starter_templates/' + template_name )
 
-# @route('/starter_templates/<template_name>')
-# def default_route(template_name):
-#     return render_template( template_name )
+@route('/view_template/<template_name:path>')
+def view_template(template_name):
+
+    # slurp in the file, slap a <pre> around it
+    with open('views/' + template_name + '.tt') as file:
+        lines = file.read()
+
+    # escape all the html, display the results
+    escaped_lines = escape(lines, quote=True)
+    tmpl_data = {
+        'content': escaped_lines,
+        'page_title': template_name,
+    }
+
+    return render_template('starter_templates/template_content', tmpl_data)
 
 
 @route('/example/kb_uploadmethods_import_genbank')

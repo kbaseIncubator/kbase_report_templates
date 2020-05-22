@@ -17,7 +17,7 @@
         content => 'image',
         config  => {
           img_alt => 'Visual representation of CheckM results',
-          img_src => '/static/data/checkM_filter_bin_qa_plot.png',
+          img_src => '/static/images/checkM_filter_bin_qa_plot.png',
           caption => '<p>Some sort of caption here</p>',
         },
       },

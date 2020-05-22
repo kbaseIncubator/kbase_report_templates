@@ -28,14 +28,19 @@
       ],
       lengthMenu: [ [25, 50, -1], [25, 50, "All"] ],
       columns: cols,
-    }
+    };
+
 [%
   END;
 
 
   BLOCK dsv_wrapper;
+  # requires:
+  # data_file : /path/to/data/file.txt
+  # data_file_format: csv | tsv
 %]
-    d3.[% data_file_format %]('[% data_file %]').then(function(data) {
+    d3.text('[% data_file %]').then(function(lines) {
+      const data = d3.[% data_file_format %]Parse(lines)
 [%
     content;
 %]

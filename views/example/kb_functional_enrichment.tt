@@ -40,8 +40,10 @@
     ]
 
 [%
+
     PROCESS default_table_conf;
     PROCESS default_data_load;
+
 %]
 
   })
