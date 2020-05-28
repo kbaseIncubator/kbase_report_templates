@@ -1,4 +1,16 @@
 [%
+  BLOCK js_wrapper;
+  # standard JS wrapper to execute code on page load
+%]
+  <script>
+  "use strict";
+  $(document).ready( () => {
+[% content %]
+    $('#navigation li:first-child a').tab('show')
+  })
+  </script>
+[% END;
+
 
 # l - length changing input control
 # f - filtering input
@@ -16,28 +28,52 @@
 # S - Scroller
 # P - SearchPanes
 
-  BLOCK default_table_conf %]
-
+  BLOCK default_table_conf;
+  # a JS variable named 'cols' must exist with the column configuration set up
+  # see https://datatables.net/reference/option/columns for details 
+  
+%]
     const tableConfig = {
       dom: 'Bfrtipl',
       buttons: [
         {
+          text: 'Downloads',
+          className: 'disabled',
+          enabled: false,
+        },
+        {
           extend: 'csv',
-          text: 'Download as CSV',
+          text: 'CSV',
+          extension: '.csv',
+        },
+        {
+          extend: 'csv',
+          text: 'TSV',
+          fieldSeparator: '\t',
+          extension: '.tsv',
+        },
+        {
+          text: 'JSON',
+          action: function ( e, dt, button, config ) {
+            $.fn.dataTable.fileSave(
+              new Blob( [ JSON.stringify( dt.buttons.exportData() ) ] ),
+              'Export.json'
+            );
+          },
         },
       ],
       lengthMenu: [ [25, 50, -1], [25, 50, "All"] ],
       columns: cols,
     };
-
 [%
   END;
 
 
   BLOCK dsv_wrapper;
-  # requires:
-  # data_file : /path/to/data/file.txt
-  # data_file_format: csv | tsv
+  # surrounds a block of JS with the wrapper to retrieve and parse CSV or TSV data
+  # args:
+  #   data_file: '/path/to/file'        # path to file containing table data
+  #   data_file_format: ('csv' | 'tsv') # appropriate file format
 %]
     d3.text('[% data_file %]').then(function(lines) {
       const data = d3.[% data_file_format %]Parse(lines);
@@ -52,12 +88,17 @@
   BLOCK default_data_load;
   #
   # args:
-  #   data_file: '/path/to/file'        # path to file containing table data
-  #   data_file_format: ('csv' | 'tsv') # optional
   #   table_id: 'some_table_id'         # ID of the table
-
-    IF data_file_format
-      && ( data_file_format == 'csv' || data_file_format == 'tsv' );
+  #   data_file: '/path/to/file'        # path to file containing table data (optional)
+  #   data_file_format: ('csv'|'tsv'|'json') # (optional) - data file format
+  #
+  #   data_js_variable:                 # (optional) - for JSON files, where the array of objects
+  #                                     # to be tabulated is
+  #
+  #   custom_data_load_block:           # a block to be processed to produce / wrangle data.
+                                        # Should include initialisation code to ensure that the
+                                        # table can be populated.
+    IF data_file_format && ( data_file_format == 'csv' || data_file_format == 'tsv' );
 
       WRAPPER dsv_wrapper;
 %]
@@ -65,65 +106,35 @@
       $('#[% table_id %]').DataTable(tableConfig);
 [%
       END;
-
-    ELSIF data_file;
-      # retrieve the data file by AJAX
-%]
-      tableConfig.ajax = '[% data_file %]'
-      $('#[% table_id %]').DataTable(tableConfig)
-[%
     ELSE;
 
-      # custom code to get data goes here
+      IF data_file_format && data_file_format == 'json' || data_file;
+        # retrieve the data file by AJAX
+        # data is expected to be an array of objects in JSON format
+        # i.e. [ {...}, {...}, {...} ]
+        # see https://datatables.net/manual/ajax for more details
+        IF ! ajax_data_src;
+          ajax_data_src = '';
+        END;
 %]
-      tableConfig.data = table_data
-      $('#[% table_id %]').DataTable(tableConfig)
-[%  END;
-
+    tableConfig.ajax = {
+      url: '[% data_file %]',
+      dataSrc: "[% ajax_data_src %]",
+    }
+[%
+      ELSIF data_js_variable;
+        # data in a JS variable
+%]
+    tableConfig.data = [% data_js_variable %];
+[%
+      ELSE;
+      # TODO: add in specific param for custom JS
+        IF custom_data_load_block;
+          custom_data_load_block;
+        END;
+      END;
+%]
+    $('#[% table_id %]').DataTable(tableConfig);
+[%  END; # end if data_file_format && ...
   END;
-
-
-  BLOCK default_js; %]
-<script>
-  "use strict";
-  $(document).ready(function () {
-
-    const cols = [
-      { data: 'term_id',            title: 'Term ID' },
-      { data: 'term',               title: 'Description' },
-      { data: 'ontology',           title: 'Ontology' },
-      { data: 'num_in_feature_set', title: 'Number in FeatureSet' },
-      { data: 'num_in_ref_genome',  title: 'Number in Genome' },
-      { data: 'raw_p_value',        title: 'Raw p-value' },
-      { data: 'adjusted_p_value',   title: 'Corrected p-value' },
-    ]
-[%
-    # write out the default table config
-    default_table_conf;
-
-    # write out the data loading code
-    default_data_load;
-
-    IF data_file_format
-      && ( data_file_format == 'csv' || data_file_format == 'tsv' ); %]
-
-    d3.[% data_file_format %]('[% data_file %]').then(function(data) {
-[%
-      # put in any data wrangling here
 %]
-      tableConfig.data = data
-      $('#[% table_id %]').DataTable(tableConfig);
-    });
-[%
-    ELSIF data_file;
-      # retrieve the data file by AJAX
-%]
-      tableConfig.ajax = '[% data_file %]'
-      $('#[% table_id %]').DataTable(tableConfig)
-
-    ELSIF
-
-[%  END %]
-  })
-</script>
-[% END %]

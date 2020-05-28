@@ -1,43 +1,56 @@
 [%
-    page_title = 'Template Examples';
-    WRAPPER 'views/inc/page_wrapper.tt';
-    PROCESS 'views/inc/macros.tt';
+  page_title = 'Template Examples';
+  WRAPPER 'views/inc/page_wrapper.tt';
+  PROCESS 'views/inc/macros.tt';
 
-    template_examples = BLOCK %]
+  template_examples = BLOCK %]
+    <h3>Examples</h3>
+    <p class="lead">
+      The following examples demonstrate different ways of supplying a data set to be rendered as a table.
+    </p>
     <ul class="lead">
-        <li><a href="/example/kb_functional_enrichment">Functional Enrichment</a>: CSV file data source, renamed headers</li>
-        <li><a href="/example/checkM_filter_by_quality">CheckM Filter Bins by Quality</a>: TSV file data source, renamed headers, row highlighting, custom cell content</li>
-        <li><a href="/example/kb_trimmomatic">Trimmomatic</a>: tabbed interface with multiple tables, custom cell content, data in javascript</li>
-        <li><a href="/example/kb_trimmomatic_single">Trimmomatic, single result</a>: same template, single result, data in javascript</li>
-        <li><a href="/example/kb_blast_blastp">BLASTp</a>: TSV data source, custom cell content, row highlighting</li>
-        <li><a href="/example/kb_hmmer">HMMer MSA</a>: TSV data source, custom cell content, row highlighting</li>
-        <li><a href="/example/gtdb_tk">GTDB-tk</a>: JSON data source, tabbed interface, custom cell content</li>
-        <!-- li><a href="/example/kb_uploadmethods_import_genbank">Import Genbank file</a>: tabbed interface, javascript data source, custom UI items</li -->
+      <li><a href="/example/edge_data_array">JS data, array of arrays</a></li>
+      <li><a href="/example/edge_data_array">JS data, array of objects</a></li>
+      <li><a href="/example/edge_data_tsv_file">Data from a TSV file</a></li>
+      <li><a href="/example/edge_data_json_file">Data from a JSON file</a></li>
     </ul>
-[%  END;
-
-    starter_templates = BLOCK %]
+    <h3>Real World Examples</h3>
     <ul class="lead">
-        <li><a href="/starter_templates/single_table">Single table</a></li>
-        <li><a href="/starter_templates/table_and_image_tabs">Table and image tabs</a></li>
-        <li><a href="/starter_templates/multiple_tables">Multiple tables</a></li>
+      <li><a href="/example/kb_functional_enrichment">Functional Enrichment</a>: CSV file data source, renamed headers</li>
+      <li><a href="/example/checkM_filter_by_quality">CheckM Filter Bins by Quality</a>: TSV file data source, renamed headers, row highlighting, custom cell content</li>
+      <li><a href="/example/kb_trimmomatic">Trimmomatic</a>: tabbed interface with multiple tables, custom cell content, data in javascript</li>
+      <li><a href="/example/kb_trimmomatic_single">Trimmomatic, single result</a>: same template, single result, data in javascript</li>
+      <li><a href="/example/kb_blast_blastp">BLASTp</a>: TSV data source, custom cell content, row highlighting</li>
+      <li><a href="/example/kb_hmmer">HMMer MSA</a>: TSV data source, custom cell content, row highlighting</li>
+      <li><a href="/example/gtdb_tk">GTDB-tk</a>: JSON data source, tabbed interface, custom cell content</li>
+      <li><a href="/example/kb_uploadmethods_import_genbank">Import Genbank file</a>: tabbed interface, javascript data source, custom UI items</li>
+    </ul>
+[%  
+  END;
+
+  starter_templates = BLOCK %]
+    <ul class="lead">
+      <li><a href="/starter_templates/single_table">Single table</a></li>
+      <li><a href="/starter_templates/table_and_image_tabs">Table and image tabs</a></li>
+      <li><a href="/starter_templates/multiple_tables">Multiple tables</a></li>
     </ul>
 [%
-    END;
+  END;
 
-    page_content = [
-        {   name    => "Report Examples",
-            name_lc => "examples",
-            rendered_content => template_examples,
-        },
+  page_content = [
+    { 
+      name    => "Report Examples",
+      name_lc => "examples",
+      rendered_content => template_examples,
+    },
     #    {   name    => "Starter Templates",
     #        name_lc => "starter_templates",
     #        rendered_content => starter_templates,
     #    },
-    ];
+  ];
 
-    tabbed_layout( page_content = page_content );
+  tabbed_layout( page_content = page_content );
 
-    END; # end page_wrapper
+END; # end page_wrapper
 
 %]

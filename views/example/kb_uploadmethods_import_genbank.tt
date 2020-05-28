@@ -1,46 +1,40 @@
 [%
   page_title = 'Import Genbank file';
-  WRAPPER 'views/inc/page_wrapper.tt';
+
+  scr_arr = ["https://www.gstatic.com/charts/loader.js"];
+  PROCESS 'views/inc/js.tt';
   PROCESS 'views/inc/macros.tt';
+  WRAPPER 'views/inc/page_wrapper.tt';
 
-  page_content = [
-      {   name    => "Overview",
-          name_lc => "overview",
-          content => 'table',
-          table_config  => {
-            id                => 'overview-table',
-            thead             => {
-              enum => [ 'Attribute', 'Value' ],
-            },
-            for_datatables_js => 1,
-          }
-      },
-      {
-          name    => 'Stats',
-          name_lc => 'stats',
-          rendered_content => '
-          <div class="row">
-            <div class="col-md-6" id="feature_chart_div"></div>
-            <div class="col-md-6" id="contig_chart_div"></div>
-          </div>'
-      }
-  ];
+    page_content = [
+        {   name    => "Overview",
+            name_lc => "overview",
+            content => 'table',
+            table_config  => {
+              id                => 'overview-table',
+              thead             => {
+                enum => [ 'Attribute', 'Value' ],
+              },
+              for_datatables_js => 1,
+            }
+        },
+        {
+            name    => 'Stats',
+            name_lc => 'stats',
+            rendered_content => '
+            <div class="row">
+              <div class="col-md-6" id="feature_chart_div"></div>
+              <div class="col-md-6" id="contig_chart_div"></div>
+            </div>'
+        }
+    ];
 
-  tabbed_layout( page_content = page_content );
+    tabbed_layout( page_content = page_content );
+
+    WRAPPER js_wrapper;
 %]
-<!--Load the AJAX API-->
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script type="text/javascript">
-  "use strict";
-  $(document).ready(function () {
-    const table_data = [
-    [%
-      FOR item IN upload_data; %]
-      ["[% item.first %]", "[% item.last %]"],[%
-      END; %]
-    ],
-    table_data_obj = {
-    [%
+    const input_data = [% upload_data %],
+    table_data_obj = {[%
       FOR item IN upload_data; %]
       "[% item.first %]": "[% item.last %]",[%
       END; %]
@@ -52,7 +46,7 @@
         { title: 'Attribute' },
         { title: 'Value' },
       ],
-      data: table_data,
+      data: input_data,
       ordering: false,
       paging: false,
     });
@@ -63,15 +57,12 @@
     google.charts.setOnLoadCallback(drawContigs);
 
     function drawFeatures() {
+      const genomeFeatures = ['CDS', 'misc_feature', 'mobile_element', 'ncRNA', 'non_coding_features', 'non_coding_genes', 'protein_encoding_gene', 'rRNA', 'rep_origin', 'repeat_region', 'tRNA', 'tmRNA'].map( f => { return [f, parseInt(table_data_obj[f])]})
 
       var data = new google.visualization.DataTable();
       data.addColumn('string', 'Type');
       data.addColumn('number', 'Count');
-      data.addRows([[%
-        FOR feature IN genome_features;
-          '["' _ feature.join('",') _ '],';
-        END;
-      %]]);
+      data.addRows(genomeFeatures);
 
       var options = {
         'title':    'Genome Features',
@@ -111,11 +102,8 @@
       );
       chart.draw(data, options);
     }
-
-    $('#navigation li:first-child a').tab('show')
-  })
-</script>
-[%
-  END # end wrapper
+[%  
+    END; # end js_wrapper
+  END; # end page wrapper
 %]
 

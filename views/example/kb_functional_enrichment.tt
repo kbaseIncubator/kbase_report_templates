@@ -1,14 +1,12 @@
 [%
-    include_dsv_parser = 1;
+  page_title        = 'Functional Enrichment for GO terms';
+  table_id          = 'functional_enrichment_go-table';
+  data_file         = '/static/data/functional_enrichment.csv';
+  data_file_format  = 'csv';
 
-    page_title        = 'Functional Enrichment for GO terms';
-    table_id          = 'functional_enrichment_go-table';
-    data_file         = '/static/data/functional_enrichment.csv';
-    data_file_format  = 'csv';
-
-    WRAPPER 'views/inc/page_wrapper.tt';
-    PROCESS 'views/inc/macros.tt';
-    PROCESS 'views/inc/js.tt';
+  PROCESS 'views/inc/macros.tt';
+  PROCESS 'views/inc/js.tt';
+  WRAPPER 'views/inc/page_wrapper.tt';
 
     page_content = [
       {
@@ -24,11 +22,8 @@
 
     tabbed_layout( page_content = page_content );
 
+    WRAPPER js_wrapper;
 %]
-<script>
-  "use strict";
-  $(document).ready(function () {
-
     const cols = [
       { data: 'term_id',            title: 'Term ID' },
       { data: 'term',               title: 'Description' },
@@ -38,17 +33,10 @@
       { data: 'raw_p_value',        title: 'Raw p-value' },
       { data: 'adjusted_p_value',   title: 'Corrected p-value' },
     ]
-
 [%
-
-    PROCESS default_table_conf;
-    PROCESS default_data_load;
-
-%]
-
-  })
-</script>
-[%
-    END; # end wrapper
+      PROCESS default_table_conf;
+      PROCESS default_data_load;
+    END; # end js_wrapper
+  END; # end page wrapper
 
 %]

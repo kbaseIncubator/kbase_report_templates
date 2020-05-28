@@ -1,7 +1,8 @@
 [%
-    page_title = 'Trimmomatic Results';
-    WRAPPER 'views/inc/page_wrapper.tt';
-    PROCESS 'views/inc/macros.tt';
+  page_title = 'Trimmomatic Results';
+  PROCESS 'views/inc/js.tt';
+  PROCESS 'views/inc/macros.tt';
+  WRAPPER 'views/inc/page_wrapper.tt';
 
     FOR result IN page_content;
       # capture the output of BLOCK trimmomatic_result
@@ -11,10 +12,24 @@
 
     tabbed_layout( page_content = page_content );
 
-%]
-<script>
-  "use strict";
-  $(document).ready(function () {
+    WRAPPER js_wrapper; %]
+
+    function get_data( id ) {
+      const data_set = {
+[%      FOR result IN page_content;
+          IF result.data;
+%]      '[% result.name_lc %]-table': [% result.data %],
+[%        END;
+        END; %]
+      }
+
+      if ( ! data_set[ id ] ) {
+        console.error( 'No data found for ' + id )
+        return
+      }
+      return data_set[ id ]
+    }
+
     const cols = [
       {
         data: "type",
@@ -56,28 +71,8 @@
         });
       }
     })
-
-    $('#navigation li:first-child a').tab('show')
-
-    function get_data( id ) {
-
-      const data_set = {
-[%      FOR result IN page_content;
-          IF result.data;
-%]      '[% result.name_lc %]-table': [% result.data %],
-[%        END;
-        END; %]
-      }
-
-      if ( ! data_set[ id ] ) {
-        console.error( 'No data found for ' + id )
-        return
-      }
-      return data_set[ id ]
-    }
-  })
-</script>
-[%
+[%  
+    END; # end js_wrapper
   END; # end page_wrapper
 
 

@@ -1,13 +1,12 @@
-[%  include_dsv_parser = 1;
+[% 
+  page_title        = 'HMMer MSA Prot-Prot Search Results';
+  table_id          = 'hmmer-table';
+  data_file         = '/static/data/hmmer.tsv';
+  data_file_format  = 'tsv';
 
-    page_title        = 'HMMer MSA Prot-Prot Search Results';
-    table_id          = 'hmmer-table';
-    data_file         = '/static/data/hmmer.tsv';
-    data_file_format  = 'tsv';
-
-    WRAPPER 'views/inc/page_wrapper.tt';
-    PROCESS 'views/inc/macros.tt';
-    PROCESS 'views/inc/js.tt';
+  PROCESS 'views/inc/macros.tt';
+  PROCESS 'views/inc/js.tt';
+  WRAPPER 'views/inc/page_wrapper.tt';
 
     page_content = [
         {   name      => page_title,
@@ -21,11 +20,9 @@
     ];
 
     tabbed_layout( page_content = page_content );
-%]
-<script>
-  "use strict";
-  $(document).ready(function () {
 
+    WRAPPER js_wrapper;
+%]
     function renderProgressBar( data, type ){
       if (type !== 'display')
         return data
@@ -70,8 +67,7 @@
         title: "H-beg - H-end",
       },
     ]
-
-[%  PROCESS default_table_conf %]
+[%    PROCESS default_table_conf %]
 
     tableConfig.createdRow = function( row, data ) {
       if ( data.bit_score < MIN_BIT_SCORE ) {
@@ -80,7 +76,7 @@
     }
     tableConfig.order = [[ 7, "asc" ]]
 [%
-    WRAPPER dsv_wrapper;
+      WRAPPER dsv_wrapper;
 %]
       data.forEach( d => {
         // convert left/middle/right into appropriate things
@@ -90,9 +86,7 @@
       tableConfig.data = data
       $('#[% table_id %]').DataTable(tableConfig);
 [%
-    END; # dsv_wrapper
-%]
-  })
-</script>
-[% END; # end wrapper %]
+      END; # dsv_wrapper
+    END; # end js_wrapper
+  END; # end wrapper %]
 

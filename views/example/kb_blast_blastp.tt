@@ -1,13 +1,12 @@
-[%  include_dsv_parser = 1;
+[%
+  page_title        = 'BLASTp Results';
+  table_id          = 'blastp_results-table';
+  data_file         = '/static/data/kb_blast_BLASTp_Search.tsv';
+  data_file_format  = 'tsv';
 
-    page_title        = 'BLASTp Results';
-    table_id          = 'blastp_results-table';
-    data_file         = '/static/data/kb_blast_BLASTp_Search.tsv';
-    data_file_format  = 'tsv';
-
-    WRAPPER 'views/inc/page_wrapper.tt';
-    PROCESS 'views/inc/macros.tt';
-    PROCESS 'views/inc/js.tt';
+  PROCESS 'views/inc/macros.tt';
+  PROCESS 'views/inc/js.tt';
+  WRAPPER 'views/inc/page_wrapper.tt';
 
     page_content = [
         {   name      => page_title,
@@ -21,11 +20,8 @@
     ];
 
     tabbed_layout( page_content = page_content );
-%]
-</div>
-<script>
-  "use strict";
-  $(document).ready(function () {
+
+    WRAPPER js_wrapper; %]
 
     function renderMatchBar(data, type){
       if (type !== 'display')
@@ -79,17 +75,12 @@
         title: "Gap open",
       },
     ]
+[%    
+      PROCESS default_table_conf;
 
-[%  PROCESS default_table_conf %]
-
-    tableConfig.createdRow = function( row, data ) {
-      if ( data.passes_criteria === "false" ) {
-        $(row).addClass( 'danger' );
-      }
-    }
-    tableConfig.order = [[ 1, "asc" ]]
-
-[%  WRAPPER dsv_wrapper %]
+      # custom data wrangling
+      WRAPPER dsv_wrapper;
+%]
       data.forEach( d => {
         // convert left/middle/right into appropriate things
         d.alignment_coverage = [ d.left, d.middle, d.right ]
@@ -97,11 +88,17 @@
         d.start_end = d.q_beg + '-' + d.q_end + ': ' + d.h_beg + '-' + d.h_end
       } )
 
+      tableConfig.createdRow = function( row, data ) {
+        if ( data.passes_criteria === "false" ) {
+          $(row).addClass( 'danger' );
+        }
+      }
+      tableConfig.order = [[ 1, "asc" ]]
       tableConfig.data = data
       $('#[% table_id %]').DataTable(tableConfig);
 [%
-    END;
+      END; # end dsv_wrapper
+    END; # end js wrapper
+  END; # end wrapper
+
 %]
-  })
-</script>
-[% END; # end wrapper %]
