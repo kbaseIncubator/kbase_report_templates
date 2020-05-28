@@ -10,3 +10,12 @@ version](https://github.com/lmr/Template-Toolkit-Python).
 Data are presented using [DataTables](https://datatables.net), a javascript library for creating flexible, customisable tables. DataTables is very customisable (and can hence be very confusing) so these templates use some sensible defaults. You can customise your tables further if you wish.
 
 See the wiki for more information on developing templates.
+
+## Quickstart
+
+Install bottle and Template Toolkit and start exploring templates:
+
+$ virtualenv develop                    # Create virtual environment
+$ source develop/bin/activate           # Change default python to virtual env
+(develop)$ pip install -U bottle Template-Toolkit-Python    # Install bottle and TTP to virtual env
+(develop)$ $ python app.py

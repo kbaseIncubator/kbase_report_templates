@@ -9,7 +9,6 @@ def render_template(template_name, template_data={}):
         'ABSOLUTE': 1,
         'RELATIVE': 1,
         'INCLUDE_PATH': 'views/:.',
-        'TRIM': 1,
     })
     try:
         page = template.process('views/' + template_name + '.tt', template_data)
@@ -184,6 +183,27 @@ def kb_trimmomatic_single():
 
     return render_template('example/kb_trimmomatic', tmpl_data)
 
+@route('/example/edge_data_array')
+def edge_data_array():
+
+    source_file = os.path.join('data', 'edge_data.tsv')
+
+    # read in a file, splitting on '\n' and then '\t' to create a list of lists
+    with open(source_file, 'r') as read_fh:
+        lines = list(map(lambda x: x.split('\t'), read_fh.read().rstrip().split('\n')))
+
+    tmpl_data = {
+        # lines[0] is the header
+        # the rest of the lines are the data points
+        'parsed_data_from_file': lines[1:],
+    }
+
+    return render_template('starter_templates/edge_data_array', tmpl_data)
+
+@route('/example/edge_data_tsv_file')
+def edge_data_tsv_file():
+
+    return render_template('starter_templates/edge_data_tsv_file', { 'file_path': '/static/data/edge_data.tsv' })
 
 @route('/example/<template_name>')
 def default_route(template_name):
