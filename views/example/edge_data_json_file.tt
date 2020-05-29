@@ -19,13 +19,18 @@
           id                => table_id,
           for_datatables_js => 1,
         },
-      }
+      },
+      {
+        name    => 'Template View: ' _ template.name,
+        name_lc => 'tmpl_view',
+        rendered_content => '<pre>' _ template_content _ '</pre>',
+      },
     ];
 
     tabbed_layout( page_content = page_content );
 
-    WRAPPER js_wrapper %]
-    // remap the column names in the file to appropriate column headers
+    WRAPPER js_wrapper;
+    # remap the column names in the file to appropriate column headers %]
     const cols = [
       { data: 'node1',              title: 'Source node' },
       { data: 'node2',              title: 'Target node' },

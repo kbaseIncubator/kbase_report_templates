@@ -17,6 +17,19 @@ def render_template(template_name, template_data={}):
     except TemplateException as e:
         print("ERROR: %s" % e)
 
+def read_template(template_name):
+    '''
+    read in a template file and escape all html content
+    '''
+
+    with open('views/' + template_name + '.tt') as file:
+        lines = file.read()
+
+    # escape all the html, display the results
+    escaped_lines = escape(lines, quote=True)
+
+    return escaped_lines
+
 @route('/test')
 def test_route():
 
@@ -57,21 +70,11 @@ def send_static(filename):
 def index_route():
     return render_template('index')
 
-@route('/starter_templates/<template_name>')
-def default_route(template_name):
-    return render_template( 'starter_templates/' + template_name )
-
 @route('/view_template/<template_name:path>')
 def view_template(template_name):
 
-    # slurp in the file, slap a <pre> around it
-    with open('views/' + template_name + '.tt') as file:
-        lines = file.read()
-
-    # escape all the html, display the results
-    escaped_lines = escape(lines, quote=True)
     tmpl_data = {
-        'content': escaped_lines,
+        'content': read_template(template_name),
         'page_title': template_name,
     }
 
@@ -83,10 +86,11 @@ def edge_data_object():
     source_file = os.path.join('static', 'data', 'edge_data.json')
     with open(source_file, 'r') as read_fh:
         lines = read_fh.read().rstrip()
-    
+
     json_data = json.loads(lines)
     tmpl_data = {
         'data_array_of_objects': json_data,
+        'template_content': read_template('example/edge_data_object'),
     }
 
     return render_template('example/edge_data_object', tmpl_data)
@@ -102,13 +106,14 @@ def edge_data_array():
 
     headers = lines[0]
     output_data = list(map( lambda x: dict(zip(headers, x)), lines[1:]))
-    with open(os.path.join('static', 'data', 'edge_data_json.json'), 'w') as write_fh:
+    with open(os.path.join('static', 'data', 'edge_data.json'), 'w') as write_fh:
         write_fh.write(json.dumps( output_data ) )
 
     tmpl_data = {
         # lines[0] is the header line
         # the rest of the lines are the data points
         'data_array_of_arrays': lines[1:],
+        'template_content': read_template('example/edge_data_array'),
     }
 
     return render_template('example/edge_data_array', tmpl_data)
@@ -117,16 +122,20 @@ def edge_data_array():
 def edge_data_tsv_file():
 
     return render_template(
-        'example/edge_data_tsv_file',
-        { 'file_path': '/static/data/edge_data.tsv' }
+        'example/edge_data_tsv_file', {
+            'file_path': '/static/data/edge_data.tsv',
+            'template_content': read_template('example/edge_data_tsv_file'),
+        },
     )
 
 @route('/example/edge_data_json_file')
 def edge_data_json_file():
 
     return render_template(
-        'example/edge_data_json_file', 
-        { 'file_path': '/static/data/edge_data.json' }
+        'example/edge_data_json_file', {
+            'file_path': '/static/data/edge_data.json',
+            'template_content': read_template('example/edge_data_json_file'),
+        },
     )
 
 @route('/example/kb_uploadmethods_import_genbank')
@@ -219,6 +228,10 @@ def kb_trimmomatic_single():
     }
 
     return render_template('example/kb_trimmomatic', tmpl_data)
+
+@route('/starter_templates/<template_name>')
+def default_route(template_name):
+    return render_template( 'starter_templates/' + template_name )
 
 @route('/example/<template_name>')
 def default_route(template_name):

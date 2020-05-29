@@ -1,10 +1,10 @@
 [%
 
-    page_title        = 'Edge Data Table, from an array of arrays';
+  page_title        = 'Edge Data Table, from an array of arrays';
 
-    PROCESS 'views/inc/macros.tt';
-    PROCESS 'views/inc/js.tt';
-    WRAPPER 'views/inc/page_wrapper.tt';
+  PROCESS 'views/inc/macros.tt';
+  PROCESS 'views/inc/js.tt';
+  WRAPPER 'views/inc/page_wrapper.tt';
 
     table_id = 'single_table_on_page-table';
 
@@ -17,13 +17,19 @@
           id                => table_id,
           for_datatables_js => 1,
         },
-      }
+      },
+      {
+        name    => 'Template View: ' _ template.name,
+        name_lc => 'tmpl_view',
+        rendered_content => '<pre>' _ template_content _ '</pre>',
+      },
     ];
 
     tabbed_layout( page_content = page_content );
 
-    WRAPPER js_wrapper %]
-    // supply the column names
+    WRAPPER js_wrapper;
+
+    # supply the column names %]
     const cols = [
       { title: 'Source node' },
       { title: 'Target node' },
