@@ -15,7 +15,9 @@ See the wiki for more information on developing templates.
 
 Install bottle and Template Toolkit and start exploring templates:
 
+```sh
 $ virtualenv develop                    # Create virtual environment
 $ source develop/bin/activate           # Change default python to virtual env
 (develop)$ pip install -U bottle Template-Toolkit-Python    # Install bottle and TTP to virtual env
 (develop)$ $ python app.py
+```
