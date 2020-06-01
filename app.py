@@ -11,6 +11,10 @@ def render_template(template_name, template_data={}):
         'RELATIVE': 1,
         'INCLUDE_PATH': 'views/:.',
     })
+
+    template_data['tmpl_vars'] = json.dumps(template_data, sort_keys=True, indent=2)
+    template_data['template_content'] = read_template(template_name)
+
     try:
         page = template.process('views/' + template_name + '.tt', template_data)
         return page
@@ -80,6 +84,15 @@ def view_template(template_name):
 
     return render_template('starter_templates/template_content', tmpl_data)
 
+def edge_data_cols():
+  return [
+    { 'data': 'node1',              'title': 'Source node' },
+    { 'data': 'node2',              'title': 'Target node' },
+    { 'data': 'edge',               'title': 'Edge weight' },
+    { 'data': 'edge_descrip',       'title': 'Edge description' },
+    { 'data': 'layer_descrip',      'title': 'Layer description' },
+  ]
+
 @route('/example/edge_data_object')
 def edge_data_object():
 
@@ -88,12 +101,18 @@ def edge_data_object():
         lines = read_fh.read().rstrip()
 
     json_data = json.loads(lines)
+
     tmpl_data = {
-        'data_array_of_objects': json_data,
-        'template_content': read_template('example/edge_data_object'),
+        'page_title': 'Edge Data Table, from an array of objects',
+        'table_tab_title': 'Edge Data',
+        'data_array': json_data,
+        # our data is in the form of an array of objects with the key/value pairs that
+        # appeared in the original file. To make it more viewer-friendly, remap the
+        # names in the object to appropriate column headers
+        'cols':       edge_data_cols(),
     }
 
-    return render_template('example/edge_data_object', tmpl_data)
+    return render_template('example/edge_data', tmpl_data)
 
 @route('/example/edge_data_array')
 def edge_data_array():
@@ -104,39 +123,49 @@ def edge_data_array():
     with open(source_file, 'r') as read_fh:
         lines = list(map(lambda x: x.split('\t'), read_fh.read().rstrip().split('\n')))
 
-    headers = lines[0]
-    output_data = list(map( lambda x: dict(zip(headers, x)), lines[1:]))
-    with open(os.path.join('static', 'data', 'edge_data.json'), 'w') as write_fh:
-        write_fh.write(json.dumps( output_data ) )
-
     tmpl_data = {
+        'page_title': 'Edge Data Table, from an array of arrays',
+        'table_tab_title': 'Edge Data',
         # lines[0] is the header line
         # the rest of the lines are the data points
-        'data_array_of_arrays': lines[1:],
-        'template_content': read_template('example/edge_data_array'),
+        'data_array': lines[1:],
+        # formatted column header names in the order they appear in the header line
+        'cols': [
+          { 'title': 'Source node' },
+          { 'title': 'Target node' },
+          { 'title': 'Edge weight' },
+          { 'title': 'Edge description' },
+          { 'title': 'Layer description' },
+        ],
     }
 
-    return render_template('example/edge_data_array', tmpl_data)
+    return render_template('example/edge_data', tmpl_data)
 
 @route('/example/edge_data_tsv_file')
 def edge_data_tsv_file():
 
-    return render_template(
-        'example/edge_data_tsv_file', {
-            'file_path': '/static/data/edge_data.tsv',
-            'template_content': read_template('example/edge_data_tsv_file'),
-        },
-    )
+    tmpl_data = {
+      'page_title':       'Edge Table, data from a TSV file',
+      'table_tab_title':  'Edge Data',
+      'data_file':        '/static/data/edge_data.tsv',
+      'data_file_format': 'tsv',
+      'cols':             edge_data_cols(),
+    }
+
+    return render_template( 'example/edge_data_external_file', tmpl_data )
 
 @route('/example/edge_data_json_file')
 def edge_data_json_file():
 
-    return render_template(
-        'example/edge_data_json_file', {
-            'file_path': '/static/data/edge_data.json',
-            'template_content': read_template('example/edge_data_json_file'),
-        },
-    )
+    tmpl_data = {
+      'page_title':       'Edge Table, data from a JSON file',
+      'table_tab_title':  'Edge Data',
+      'data_file':        '/static/data/edge_data.json',
+      'data_file_format': 'json',
+      'cols':             edge_data_cols(),
+    }
+
+    return render_template( 'example/edge_data_external_file', tmpl_data )
 
 @route('/example/kb_uploadmethods_import_genbank')
 def kb_uploadmethods_import_genbank():

@@ -1,5 +1,7 @@
 [%
-  page_title = 'Trimmomatic Results';
+  page_title         = 'Trimmomatic Results';
+  include_datatables = 1;
+
   PROCESS 'views/inc/js.tt';
   PROCESS 'views/inc/macros.tt';
   WRAPPER 'views/inc/page_wrapper.tt';
@@ -10,7 +12,7 @@
       result.rendered_content = rendered_content;
     END;
 
-    tabbed_layout( page_content = page_content );
+    tabbed_layout;
 
     WRAPPER js_wrapper; %]
 
@@ -71,7 +73,7 @@
         });
       }
     })
-[%  
+[%
     END; # end js_wrapper
   END; # end page_wrapper
 

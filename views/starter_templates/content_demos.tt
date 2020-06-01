@@ -1,0 +1,114 @@
+[%
+    include_dsv_parser = 1;
+
+    scr_arr = [ 'https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.14.1/cytoscape.min.js' ]
+    page_title = 'Cytoscape Demo';
+
+    PROCESS 'views/inc/macros.tt';
+    WRAPPER 'views/inc/page_wrapper.tt';
+
+    cytoscape_content = PROCESS cytoscape;
+
+    quoted_html = '<h2>Directly-quoted HTML</h2>
+<h3>What is Lorem ipsum?</h3>
+<p><em>Lorem ipsum</em>, or <em>lipsum</em> as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Cicero\'s <em>De Finibus Bonorum et Malorum</em> for use in a type specimen book. It usually begins with:
+</p>
+<blockquote>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+</blockquote>';
+
+   random_html = '<pre>
+      page_content = [
+        ...
+        {
+          name              => "Quoted HTML",
+          name_lc           => "tab_two",
+          rendered_content  => "&lt;div>&lt;h2>Directly-quoted HTML&lt;/h2>...&lt;/div>",
+        },
+        ...
+      ]
+    </pre>';
+
+    lorem_content = PROCESS 'views/inc/lipsum.tt';
+
+    complex_content = BLOCK; %]
+    <h2>More Complex Content</h2>
+    <blockquote>
+    [%  PROCESS 'views/inc/lipsum.tt'; %]
+    </blockquote>
+    <p>Configuration</p>
+    <pre>
+complex_content = BLOCK; %&rbrack;
+&lt;h2>More Complex Content&lt;/h2>
+&lbrack;% PROCESS include_one; %&rbrack;
+
+&lbrack;% PROCESS include_two; %&rbrack;
+&lt;div>More HTML...&lt;/div>
+
+&lbrack;% END %&rbrack;
+</pre>
+<pre>
+page_content = [
+  {
+    name              => 'Complex Content',
+    name_lc           => 'complex_content',
+    rendered_content  => complex_content,
+  }
+</pre>
+[%    END;
+
+    page_content = [
+        {
+          name              => "Cytoscape Demo",
+          name_lc           => "graph_demo",
+          rendered_content  => cytoscape_content,
+        },
+        {
+          name              => "Quoted HTML",
+          name_lc           => "tab_two",
+          rendered_content  => quoted_html,
+        },
+        {
+          name              => "HTML from a BLOCK",
+          name_lc           => "tab_three",
+          rendered_content  => lorem_content,
+        },
+        {
+          name              => 'Complex Content',
+          name_lc           => 'complex_content',
+          rendered_content  => complex_content,
+        }
+    ];
+
+
+
+    tabbed_layout;
+
+    BLOCK cytoscape  %]
+
+    <div id="cy" style="height: 90%; width: 90%;"></div>
+
+[%
+    END;
+%]
+<script>
+  "use strict";
+  var cy = cytoscape({
+    container: document.getElementById('cy'), // container to render in
+  });
+
+  $.ajax({
+    url: "/static/cytoscape/cloud_comethyl.cyjs",
+  })
+  .done( (data, textStatus, jqXHR) => {
+    console.log( 'done ajax request' )
+    console.log( data.elements )
+
+    cy.json( data )
+  })
+
+</script>
+[%
+    END; # end wrapper
+
+%]

@@ -8,8 +8,8 @@
 
     page_content = [
       {
-        name    => [% table_tab_title %],
-        name_lc => 'table_tab',
+        name    => table_tab_title,
+        name_lc => 'table_data',
         content => 'table',
         table_config => {
           id                => table_id,
@@ -20,8 +20,8 @@
 
     tabbed_layout;
 
-    # add in the default code for loading the data in the template variable 'data_array', or,
-    # if data_file and data_file_format are defined, from an external CSV / TSV / JSON file
+    # add in the default code for loading the data using the 'data_file' and 'data_file_format'
+    # template variables to process the external data file
     PROCESS default_datatables_js;
 
   END; # end page wrapper

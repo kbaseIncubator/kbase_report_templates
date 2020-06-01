@@ -1,0 +1,53 @@
+[%
+    include_dsv_parser = 1;
+    page_title = 'Your title here';
+
+    WRAPPER 'views/inc/page_wrapper.tt';
+    PROCESS 'views/inc/macros.tt';
+
+
+    table_id = 'results-table';
+    data_file = '/static/data/regional-global-daily-latest.csv';
+    data_file_format = 'csv';
+
+    page_content = [
+      {
+        name    => 'Spotify Top 200', # text displayed on the tab
+        name_lc => 'spotify',
+        content => 'table',
+        table_config => {
+          id                => table_id,
+          for_datatables_js => 1,
+        },
+      },
+      {
+        name    => 'Picture tab',
+        name_lc => 'picture',
+        content => 'image',
+        config  => {
+          img_alt => 'a small gingerbread person',
+          img_src => '/static/images/image.jpg',
+          caption => '<p>This is my favourite picture.</p>',
+        },
+      },
+    ];
+
+    tabbed_layout;
+
+    js_table
+
+%]
+<script>
+  "use strict";
+  $(document).ready(function () {
+
+    [% PROCESS default_table_conf %]
+    [% PROCESS default_data_load %]
+
+    $('#navigation li:first-child a').tab('show')
+  })
+</script>
+[%
+    END; # end wrapper
+
+%]

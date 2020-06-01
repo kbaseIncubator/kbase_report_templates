@@ -1,5 +1,6 @@
 [%
-  page_title = 'Import Genbank file';
+  page_title         = 'Import Genbank file';
+  include_datatables = 1;
 
   scr_arr = ["https://www.gstatic.com/charts/loader.js"];
   PROCESS 'views/inc/js.tt';
@@ -29,7 +30,7 @@
         }
     ];
 
-    tabbed_layout( page_content = page_content );
+    tabbed_layout;
 
     WRAPPER js_wrapper;
 %]
@@ -102,7 +103,7 @@
       );
       chart.draw(data, options);
     }
-[%  
+[%
     END; # end js_wrapper
   END; # end page wrapper
 %]

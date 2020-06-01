@@ -10,7 +10,7 @@
     </p>
     <ul class="lead">
       <li><a href="/example/edge_data_array">JS data, array of arrays</a></li>
-      <li><a href="/example/edge_data_array">JS data, array of objects</a></li>
+      <li><a href="/example/edge_data_object">JS data, array of objects</a></li>
       <li><a href="/example/edge_data_tsv_file">Data from a TSV file</a></li>
       <li><a href="/example/edge_data_json_file">Data from a JSON file</a></li>
     </ul>
@@ -25,7 +25,7 @@
       <li><a href="/example/gtdb_tk">GTDB-tk</a>: JSON data source, tabbed interface, custom cell content</li>
       <li><a href="/example/kb_uploadmethods_import_genbank">Import Genbank file</a>: tabbed interface, javascript data source, custom UI items</li>
     </ul>
-[%  
+[%
   END;
 
   starter_templates = BLOCK %]
@@ -38,7 +38,7 @@
   END;
 
   page_content = [
-    { 
+    {
       name    => "Report Examples",
       name_lc => "examples",
       rendered_content => template_examples,
@@ -49,7 +49,7 @@
     #    },
   ];
 
-  tabbed_layout( page_content = page_content );
+  tabbed_layout;
 
 END; # end page_wrapper
 

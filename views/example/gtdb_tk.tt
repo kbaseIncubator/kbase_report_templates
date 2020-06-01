@@ -1,5 +1,6 @@
 [%
-  page_title = 'GTDB-tk Results';
+  page_title         = 'GTDB-tk Results';
+  include_datatables = 1;
 
   PROCESS 'views/inc/js.tt';
   PROCESS 'views/inc/macros.tt';
@@ -86,7 +87,7 @@
       item.table_config.caption = 'GTDB-tk results: ' _ item.name;
     END;
 
-    tabbed_layout( page_content = page_content );
+    tabbed_layout;
 
     WRAPPER js_wrapper;
 %]
@@ -232,8 +233,8 @@
       const t = e.target.id.substr(0, e.target.id.length-4)
 
       if ( $('#' + t + '-table') && !$.fn.DataTable.isDataTable('#' + t + '-table') ) {
-        let dataFile = dataFiles[t]
-        let cols = simpleTableCols;
+        let dataFile = dataFiles[t],
+        cols = simpleTableCols;
         if ( t === 'bacteria_marker' || t === 'archaea_marker' ) {
           cols = markerTableCols;
         }
@@ -244,6 +245,6 @@
       }
     })
 [%
-    END; # end js_wrapper 
+    END; # end js_wrapper
   END; # end wrapper
 %]

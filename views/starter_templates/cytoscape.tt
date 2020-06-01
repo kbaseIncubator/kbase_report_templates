@@ -1,0 +1,775 @@
+[%
+    scr_arr = [
+      'https://d3js.org/d3-fetch.v1.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/crossfilter2/1.5.2/crossfilter.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.14.1/cytoscape.min.js',
+    ]
+
+    page_title = 'Cytoscape Demo';
+
+    PROCESS 'views/inc/macros.tt';
+    PROCESS 'views/inc/js.tt';
+    WRAPPER 'views/inc/page_wrapper.tt';
+
+    cytoscape_content = PROCESS cytoscape;
+
+    page_content = [
+        {
+          name              => "Cytoscape",
+          name_lc           => "graph_demo",
+          rendered_content  => cytoscape_content,
+        },
+        {
+          name              => 'Node Metadata',
+          name_lc           => 'node_metadata_tab',
+          content           => 'table',
+          table_config => {
+            id                => 'table_nodes',
+            for_datatables_js => 1,
+          },
+        },
+        {
+          name              => 'Edge Metadata',
+          name_lc           => 'edge_metadata_tab',
+          content           => 'table',
+          table_config => {
+            id              => 'table_edges',
+            for_datatables_js => 1,
+          },
+        }
+    ];
+
+    tabbed_layout;
+
+    BLOCK cytoscape %]
+    <div class="container-fluid">
+      <div class="row">
+        <div id="cy" style="height: 1000px" class="col-md-10"></div>
+        <div id="controls" class="col-md-2">
+          <h2>Data</h2>
+          <div class="form-group" id="dataset--div">
+[%
+    data_sources = {
+      'pheno_assn' => 'GWAS associations produced by analyzing a subset of phenotypes and SNPs in the Arabidopsis 1001 Genomes database (13,918 nodes, 40864 edges; phenotype data)',
+      'domain_co_occur' => 'protein domain co-occurrence values from the Arabidopsis AraNetv2 database (7634 nodes, 25000 edges)',
+      'gene_coexpr' => 'pairwise gene coexpression values from the Arabidopsis AraNetv2 database (10,307 nodes, 50095 edges)',
+      'ppi_liter' => 'protein-protein interaction values from literature-curated small- to medium-scale experimental data; from the Arabidopsis AraNetv2 database (2709 nodes, 5168 edges)',
+      'ppi_hithru' => 'protein-protein interaction values derived from four high-throughput PPI screening experiments; from the Arabidopsis AraNetv2 database (4216 nodes, 8000 edges)',
+    };
+          FOR src IN data_sources.keys; %]
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" value="[% src %]" name="dataset" />
+                [% data_sources.$src %]
+              </label>
+            </div>
+[%        END %]
+          </div>
+          <div class="form-group">
+            <button id="dataset--button" class="btn dataset--button">
+              Load datasets
+            </button>
+            <!-- button id="graph_render--button" class="btn graph_render--button">
+              Render graph
+            </button -->
+          </div>
+          <h2>Layout</h2>
+          <div class="form-group" id="layout--div"></div>
+          <div class="form-group" id="layout_fit--div">
+            <button id="layout_fit--button" class="btn layout_fit--button">
+              Fit to viewport
+            </button>
+          </div>
+          <div class="form-group" id="layout_reset--div">
+            <button id="layout_reset--button" class="btn layout_reset--button">
+              Reset layout
+            </button>
+          </div>
+          <h2>Selection</h2>
+          <div class="form-group">
+            <button id="select_all--button" class="btn">
+              Select All
+            </button>
+            <button id="select_none--button" class="btn">
+              Select None
+            </button>
+            <button id="select_invert--button" class="btn">
+              Invert selection
+            </button>
+            <button id="select_neighbours--button" class="btn">
+              Get neighbourhood of selected nodes
+            </button>
+          </div>
+          <div class="form-group toggles">
+          [%
+            default_vals = [ { label => 'Off', value => 0 }, { label => 'On', value => 1, checked => 1 } ];
+            cntrl_list = [
+              { name => 'boxSelectionEnabled',  title => 'Box selection', values => default_vals, },
+              {
+                name => 'selectionType',        title => 'Selection mode',
+                values => [ { label => 'Single', value => 'single', checked => 1 }, { label => 'Multiple ', value => 'additive' } ],
+              },
+              { name => 'userPanningEnabled',   title => 'Panning', values => default_vals, },
+              { name => 'userZoomingEnabled',   title => 'Zooming', values => default_vals, },
+            ];
+
+            FOR cntrl IN cntrl_list %]
+            <div class="btn-group">
+              [% FOR item IN cntrl.values %]
+              <input type="radio" name="[% cntrl.name %]" value="[% item.value %]" id="[% cntrl.name %]--[% item.value %]" [% IF item.checked %]checked[% END %] />
+              <label class="btn btn-primary" for="[% cntrl.name %]--[% item.value %]">
+              [% item.label %]
+              </label>
+              [% END %]
+              <p>[% cntrl.title %]</p>
+            </div>
+          [% END %]
+          </div>
+          <h2>Collection</h2>
+          <div class="form-group">
+            <button id="collection_selection--button" class="btn" type="button">
+              Add selected nodes to collection
+            </button>
+            <button id="collection_view--button" class="btn" type="button" data-toggle="modal" data-target="#collectionModal">
+              View collected nodes <span class="badge" id="collection_count">0</span>
+            </button>
+          </div>
+          <h2>Filtering</h2>
+          <div class="form-group">
+            <label for="filter_degree--range">Filter by degree</label>
+            <input type="range" id="filter_degree--range" name="filter_degree" min="0" max="11">
+            <button id="filter_degree--button" class="btn">Filter!</button>
+          </div>
+          <h2>Export</h2>
+          <div class="form-group">
+            <button id="export_json--button" class="btn">
+              Export graph as JSON
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="collectionModal" tabindex="-1" role="dialog" aria-labelledby="collectionModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h3 class="modal-title" id="collectionModalLabel">Collected Nodes</h3>
+          </div>
+          <div class="modal-body">
+            <table id="table_collection" class="dataTable__table table table-striped table-bordered"></table>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <!-- button type="button" class="btn btn-primary">Save changes</button -->
+          </div>
+        </div>
+      </div>
+    </div>
+[%
+    END;
+%]
+<script>
+  "use strict";
+
+  function loadDataset(datasets) {
+    if (datasets.length < 1) {
+      alert("Please select at least one data set to load")
+      return
+    }
+    // datasets is an array of edge type names
+    d3.json('/static/cytoscape/data/djornl_dataset.json')
+    .then(allFileData =>  {
+      const data = extractData(allFileData, datasets)
+      window.kbase.data = data
+      renderData(data, datasets)
+    })
+  }
+
+  function addDatasetSelector() {
+    $('#dataset--button').click( () => {
+      const datasets = $('input[name=dataset]:checked').map( (i,e) => { return e.value }).get()
+      loadDataset(datasets)
+    })
+  }
+
+  function addLayoutSelector() {
+    const layouts = {
+      random: {
+        name: 'random',
+
+        fit: true, // whether to fit to viewport
+        padding: 30, // fit padding
+        boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
+        animate: false, // whether to transition the node positions
+        animationDuration: 500, // duration of animation in ms if enabled
+        animationEasing: undefined, // easing of animation if enabled
+        animateFilter: function ( node, i ){ return true; }, // a function that determines whether the node should be animated.  All nodes animated by default on animate enabled.  Non-animated nodes are positioned immediately when the layout starts
+        ready: undefined, // callback on layoutready
+        stop: undefined, // callback on layoutstop
+        transform: function (node, position ){ return position; } // transform a given node position. Useful for changing flow direction in discrete layouts
+      },
+      grid: {
+        name: 'grid',
+
+        fit: true, // whether to fit the viewport to the graph
+        padding: 30, // padding used on fit
+        boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
+        avoidOverlap: true, // prevents node overlap, may overflow boundingBox if not enough space
+        avoidOverlapPadding: 10, // extra spacing around nodes when avoidOverlap: true
+        nodeDimensionsIncludeLabels: false, // Excludes the label when calculating node bounding boxes for the layout algorithm
+        spacingFactor: undefined, // Applies a multiplicative factor (>0) to expand or compress the overall area that the nodes take up
+        condense: false, // uses all available space on false, uses minimal space on true
+        rows: undefined, // force num of rows in the grid
+        cols: undefined, // force num of columns in the grid
+        position: function( node ){}, // returns { row, col } for element
+        sort: undefined, // a sorting function to order the nodes; e.g. function(a, b){ return a.data('weight') - b.data('weight') }
+        animate: false, // whether to transition the node positions
+        animationDuration: 500, // duration of animation in ms if enabled
+        animationEasing: undefined, // easing of animation if enabled
+        animateFilter: function ( node, i ){ return true; }, // a function that determines whether the node should be animated.  All nodes animated by default on animate enabled.  Non-animated nodes are positioned immediately when the layout starts
+        ready: undefined, // callback on layoutready
+        stop: undefined, // callback on layoutstop
+        transform: function (node, position ){ return position; } // transform a given node position. Useful for changing flow direction in discrete layouts
+      },
+      circle: {
+        name: 'circle',
+
+        fit: true, // whether to fit the viewport to the graph
+        padding: 30, // the padding on fit
+        boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
+        avoidOverlap: true, // prevents node overlap, may overflow boundingBox and radius if not enough space
+        nodeDimensionsIncludeLabels: false, // Excludes the label when calculating node bounding boxes for the layout algorithm
+        spacingFactor: undefined, // Applies a multiplicative factor (>0) to expand or compress the overall area that the nodes take up
+        radius: undefined, // the radius of the circle
+        startAngle: 3 / 2 * Math.PI, // where nodes start in radians
+        sweep: undefined, // how many radians should be between the first and last node (defaults to full circle)
+        clockwise: true, // whether the layout should go clockwise (true) or counterclockwise/anticlockwise (false)
+        sort: undefined, // a sorting function to order the nodes; e.g. function(a, b){ return a.data('weight') - b.data('weight') }
+        animate: false, // whether to transition the node positions
+        animationDuration: 500, // duration of animation in ms if enabled
+        animationEasing: undefined, // easing of animation if enabled
+        animateFilter: function ( node, i ){ return true; }, // a function that determines whether the node should be animated.  All nodes animated by default on animate enabled.  Non-animated nodes are positioned immediately when the layout starts
+        ready: undefined, // callback on layoutready
+        stop: undefined, // callback on layoutstop
+        transform: function (node, position ){ return position; } // transform a given node position. Useful for changing flow direction in discrete layouts
+      },
+
+      concentric: {
+        name: 'concentric',
+
+        fit: true, // whether to fit the viewport to the graph
+        padding: 30, // the padding on fit
+        startAngle: 3 / 2 * Math.PI, // where nodes start in radians
+        sweep: undefined, // how many radians should be between the first and last node (defaults to full circle)
+        clockwise: true, // whether the layout should go clockwise (true) or counterclockwise/anticlockwise (false)
+        equidistant: false, // whether levels have an equal radial distance betwen them, may cause bounding box overflow
+        minNodeSpacing: 10, // min spacing between outside of nodes (used for radius adjustment)
+        boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
+        avoidOverlap: true, // prevents node overlap, may overflow boundingBox if not enough space
+        nodeDimensionsIncludeLabels: false, // Excludes the label when calculating node bounding boxes for the layout algorithm
+        height: undefined, // height of layout area (overrides container height)
+        width: undefined, // width of layout area (overrides container width)
+        spacingFactor: undefined, // Applies a multiplicative factor (>0) to expand or compress the overall area that the nodes take up
+        concentric: function( node ){ // returns numeric value for each node, placing higher nodes in levels towards the centre
+          return node.degree();
+        },
+        levelWidth: function( nodes ){ // the letiation of concentric values in each level
+          return nodes.maxDegree() / 4;
+        },
+        animate: false, // whether to transition the node positions
+        animationDuration: 500, // duration of animation in ms if enabled
+        animationEasing: undefined, // easing of animation if enabled
+        animateFilter: function ( node, i ){ return true; }, // a function that determines whether the node should be animated.  All nodes animated by default on animate enabled.  Non-animated nodes are positioned immediately when the layout starts
+        ready: undefined, // callback on layoutready
+        stop: undefined, // callback on layoutstop
+        transform: function (node, position ){ return position; } // transform a given node position. Useful for changing flow direction in discrete layouts
+      },
+      cose: {
+        name: 'cose',
+        refresh: 20, // Number of iterations between consecutive screen positions update
+        fit: true, // Whether to fit the network view after when done
+        padding: 30, // Padding on fit
+        boundingBox: undefined, // Constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
+        nodeDimensionsIncludeLabels: false, // Excludes the label when calculating node bounding boxes for the layout algorithm
+
+        ready: undefined, // callback on layoutready
+        stop: undefined, // callback on layoutstop
+        // Whether to animate while running the layout
+        // true : Animate continuously as the layout is running
+        // false : Just show the end result
+        // 'end' : Animate with the end result, from the initial positions to the end positions
+        animate: true,
+        animationDuration: undefined, // duration of animation in ms if enabled
+        animationEasing: undefined, // easing of animation if enabled
+        // A function that determines whether the node should be animated
+        // All nodes animated by default on animate enabled
+        // Non-animated nodes are positioned immediately when the layout starts
+        animateFilter: () => true,
+        // The layout animates only after this many milliseconds for animate:true
+        // (prevents flashing on fast runs)
+        animationThreshold: 250,
+
+        randomize: false, // Randomize the initial positions of the nodes (true) or use existing positions (false)
+        componentSpacing: 40, // Extra spacing between components in non-compound graphs
+        nodeRepulsion: function( node ){ return 2048; }, // Node repulsion (non overlapping) multiplier
+        nodeOverlap: 4, // Node repulsion (overlapping) multiplier
+        idealEdgeLength: function( edge ){ return 32; }, // Ideal edge (non nested) length
+        edgeElasticity: function( edge ){ return 32; }, // Divisor to compute edge forces
+        nestingFactor: 1.2, // Nesting factor (multiplier) to compute ideal edge length for nested edges
+        gravity: 1, // Gravity force (constant)
+        numIter: 1000, // Maximum number of iterations to perform
+        initialTemp: 1000, // Initial temperature (maximum node displacement)
+        coolingFactor: 0.99, // Cooling factor (how the temperature is reduced between consecutive iterations
+        minTemp: 1.0 // Lower temperature threshold (below this point the layout will end)
+      }
+    },
+    // insert an options element with each of the layouts above
+    layoutArr = Object.keys(layouts).map( (layout,i) => {
+      return '<option value="' + layout + '"'
+        + ( i ? '' : ' selected' )
+        + '>' + layout + '</option>'
+    }),
+    select_str = '<select id="layout--select" class="form-control" name="layout">' + layoutArr.join('\n') + '</select>'
+    $('#layout--div').append(select_str)
+    return layouts
+  }
+
+  function initGraph(elementId, nodeArr, edgeArr) {
+    // check the current state of the controls
+    const layout_value = $('#layout--select').val() || 'random'
+    let chartOptions = {
+      container: document.getElementById(elementId), // container to render in
+      elements: {
+        nodes: nodeArr,
+        edges: edgeArr,
+      },
+      layout: layouts[layout_value],
+      // so we can see the ids
+      style: [
+        {
+          selector: 'node',
+          style: {
+            'width': 10,
+            'height': 10,
+            'shape': 'ellipse', // (ellipse/rectangle/round-diamond),
+            'background-color': '#4682b4',
+          }
+        },
+        {
+          selector: 'node.collected',
+          style: {
+            "border-width": 4,
+            'width': 14,
+            'height': 14,
+            "border-style": "solid",
+            "border-color": '#264662',
+            "border-opacity": 1,
+          }
+        },
+        {
+          selector: 'node:selected',
+          style: {
+            "background-color": '#e77943',
+            'label': 'data(id)'
+          },
+        },
+        {
+          selector: 'node.phenotype',
+          style: {
+            'width': 50,
+            'height': 50,
+            'shape': 'round-diamond',
+          },
+        },
+        {
+          selector: 'edge',
+          style: {
+            'width': 1,
+            'line-color': '#ccc',
+          }
+        }
+      ],
+    }
+    const radioControls = [
+      'userZoomingEnabled',
+      'userPanningEnabled',
+      'boxSelectionEnabled',
+      'selectionType',
+    ]
+    radioControls.forEach( r => {
+      let val = $('input[name=' + r + ']:checked').val()
+      if (val === "0") {
+        val = 0
+      }
+      chartOptions[r] = val
+    })
+    return cytoscape(chartOptions)
+  }
+
+  /*
+   *  Render a set of nodes and edges in an existing graph
+   */
+  function renderGraph(data) {
+    const layout_value = $('#layout--select').val() || 'random'
+    // remove all nodes from graph first?
+    cy.nodes().remove()
+    cy
+      .add({ nodes: data.nodeArr, edges: data.edgeArr })
+      .layout(layouts[layout_value]).run()
+  }
+
+  function tableConfig(type) {
+
+    if (type === 'collection') {
+      return {
+        columns: columnConfig(type),
+        dom: '<"table-top clearfix"fi>rt<"table-bottom clearfix"l>',
+        scrollY: 500,
+        order: [[0, 'desc']],
+      }
+    }
+
+    return {
+      columns: columnConfig(type),
+      // l - length changing input control
+      // f - filtering input
+      // t - The table!
+      // i - Table information summary
+      // p - pagination control
+      // r - processing display element
+      dom: '<"table-top clearfix"fiB>rt<"table-bottom clearfix"lp>',
+      scrollX: true,
+      order: [[0, 'desc']],
+      paging: true,
+      lengthMenu: [[25, 50, 100, -1], [25, 50, 100, 'All']],
+      deferRender: true,
+      searchPanes: searchPaneConfig(type),
+      select: {
+        style: 'os',
+      },
+      rowId: 'id',
+      buttons: [
+        {
+          extend: 'colvis',
+          columns: ':gt(0)',
+        },
+        {
+          extend: 'csv',
+          text: 'Download as CSV',
+        },
+        {
+          extend: 'selectAll',
+          text: 'Select all',
+        },
+        {
+          extend: 'selectNone',
+          text: 'Select none',
+        },
+        {
+          extend: 'selected',
+          text: 'Count selected rows',
+          action: function ( e, dt, button, config ) {
+              alert( dt.rows( { selected: true } ).indexes().length +' row(s) selected' );
+          }
+        },
+        {
+          name: 'selectFilter',
+          text: 'Select filtered',
+          action: function ( e, dt, button, config ) {
+            dt.rows( { search: 'applied' } ).select()
+          },
+        },
+        {
+          name: 'addToCollection',
+          text: 'Add selected nodes to collection',
+          action: function( e, dt, button, config ) {
+            // extract the ids
+            const ids = dt.rows({ selected: true }).data().map( d => d.id )
+            Object.values(ids).forEach( id => {
+              let node = cy.getElementById(id)
+              node.addClass('collected')
+              collection = collection.union(node)
+              $('#collection_count').text( collection.length )
+            })
+          },
+        },
+        {
+          extend: 'searchPanes',
+          text: 'Faceted search',
+        },
+      ],
+    }
+  }
+
+  function columnConfig(type) {
+    const cols = {
+      collection: ['ID', 'Node type', 'Transcript', 'Gene symbol'],
+      edges: ['ID', 'Source', 'Target', 'Type', 'Score'],
+      nodes: ['ID',
+        'Node type',
+        'Transcript',
+        'Gene symbol',
+        'Gene full name',
+        'Gene model type',
+        'TAIR computational desc',
+        'TAIR curator summary',
+        'TAIR short desc',
+        'GO terms',
+        'GO descr',
+        'Mapman bin',
+        'Mapman name',
+        'Mapman desc',
+        'Pheno AraGWAS ID',
+        'Pheno desc1',
+        'Pheno desc2',
+        'Pheno desc3',
+        'Pheno ref',
+        'User notes',
+      ],
+    }
+
+    return cols[type].map(c => {
+      const name_lc = c.toLowerCase().replace(' ', '_')
+      return {
+        data: name_lc,
+        className: name_lc,
+        title: c,
+        defaultContent: '',
+      }
+    })
+  }
+
+  function searchPaneConfig(type) {
+    if (type !== 'edges') {
+      return []
+    }
+    return {
+      columns: [1, 2, 3, 4],
+      threshold: 1,
+    }
+    // // cols: ['ID', 'Source', 'Target', 'Type', 'Score'],
+    // let edgeCols = {
+    //   'Score': -1,
+    //   'Type': -1,
+    // }
+    // let colCount = 0
+    // Object.keys(edgeCols).forEach(c => {
+    //   edgeCols[c] = cols.indexOf(c)
+    //   colCount++
+    // })
+    // if (colCount === 2) {
+    //   return Object.values(edgeCols)
+    // }
+    // return []
+  }
+
+  function extractData(inputData, datasets) {
+    // keys are assocs, genes, phenotypes
+    let data = {
+      nodes: {},
+      edges: {},
+      nodesSeen: {},
+    }
+
+    inputData['assocs'].forEach(d => {
+      if ( datasets.indexOf(d.type) !== -1) {
+        data.edges[d.id] = {
+          id: d.id,
+          source: d.from,
+          target: d.to,
+          type: d.type,
+          score: d.score,
+          data_type: 'edge',
+        }
+
+        const nodeType = ['from', 'to']
+        nodeType.forEach( n => {
+          data.nodesSeen[d[n]] ? data.nodesSeen[d[n]]++ : data.nodesSeen[d[n]] = 1
+        })
+      }
+    })
+
+    // pheno and gene data
+    const data_types = ['genes', 'phenotypes']
+    data_types.forEach( type => {
+      inputData[ type ].forEach( d => {
+        // only add to node data if the node is used by an edge
+        if (data.nodesSeen[d.id]) {
+          d.data_type = 'node'
+          data.nodes[d.id] = d
+        }
+      })
+    })
+
+    // ensure that all nodes are present in nodeData
+    Object.keys(data.nodesSeen).forEach( n => {
+      if (! data.nodes[n]) {
+        console.error('no node data for ' + n)
+      }
+    })
+    return data
+  }
+
+  function renderData(data, datasets) {
+
+    window.kbase.data = data
+    data.collection = {}
+    xf = crossfilter(Object.values(data.edges))
+    xfDim['type'] = xf.dimension(d => d.type)
+    // apply filters
+    // let filteredEdges = data.edges.filter(f => datasets.indexOf(f.type) !== -1)
+
+          // xfDim[tableSetup[k]['xf']]
+          //   .group()
+          //   .top(Infinity)
+          //   .filter(d => d.value > 0)
+
+    data.nodeArr = Object.keys(data.nodesSeen).map(el => { return { data: { id: el } } })
+    data.edgeArr = Object.values(data.edges).map(el => { return { data: el } } )
+    console.log('Found ' + data.nodeArr.length + ' nodes and ' + data.edgeArr.length + ' edges')
+
+    renderGraph(data)
+    refreshTable()
+    renderControls(cy, data)
+    // xf = crossfilter(Object.values(data.edges).concat(Object.values(data.nodes)))
+
+  }
+
+  function renderControls(cy, data) {
+
+    $('#layout--select').off().change( () => {
+      const value = $('#layout--select').val()
+      cy.layout( layouts[value] ).run()
+    })
+
+    $('#layout_reset--button').off().click( () => { cy.reset() } )
+    $('#layout_fit--button').off().click( () => { cy.fit() } )
+    // selection buttons
+    $('#select_all--button').off().click( () => { cy.nodes().forEach( e => e.select() ) } )
+    $('#select_none--button').off().click( () => { cy.nodes().forEach( e => e.unselect() ) } )
+    $('#select_invert--button').off().click( () => { cy.nodes().forEach( e => e.selected() ? e.unselect() : e.select() ) } )
+
+    $('#export_json--button').off().click( () => { console.log(cy.json()) } )
+
+    // userZoomingEnabled
+    // userPanningEnabled
+    // boxSelectionEnabled
+    // selectionType
+    $('.toggles input[type=radio]').off().change( e => {
+        let val = e.target.value
+        if (val === "0") {
+          val = 0
+        }
+        cy[ e.target.name ]( val )
+      }
+    )
+
+    $('#select_neighbours--button').off().click( () => {
+      cy.filter( el => el.isNode() && el.selected() ).neighbourhood().select()
+    } )
+    $('#collection_selection--button').off().click( () => {
+      collection = collection.union( cy.filter( el => el.isNode() && el.selected() ).addClass('collected') )
+      $('#collection_count').text( collection.length )
+    })
+    $('#collection_view--button').off().click( () => {
+      data.collection = {}
+      collection.forEach( c => data.collection[ c.id() ] = data.nodes[ c.id() ] )
+      refreshTable()
+    })
+
+    // let nMin = 999999, nMax = 0
+    // cy.nodes().forEach( n => {
+    //   let node_id = n.id()
+    //   data.nodeData[ n.id() ]['degree'] = n.degree()
+    //   if (data.nodeData[ n.id() ].node_type === 'pheno') {
+    //     n.addClass('phenotype')
+    //   }
+    //   if (n.degree() > nMax) {
+    //     nMax = n.degree()
+    //   }
+    //   if (n.degree() < nMin) {
+    //     nMin = n.degree()
+    //   }
+    // })
+    // $('#filter_degree--range').attr({
+    //   min: nMin,
+    //   max: nMax,
+    // })
+
+    // $('#filter_degree--button').click( () => {
+    //   const value = $('#filter_degree--range').val()
+    //   cy.remove(cy.filter( e => e.isNode() && e.degree() > value))
+    //   let nMin = 999999, nMax = 0
+    //   cy.nodes().forEach( n => {
+    //     let d = n.degree()
+    //     if (d > nMax) {
+    //       nMax = d
+    //     }
+    //     if (d < nMin) {
+    //       nMin = d
+    //     }
+    //   })
+    //   // reset the slider values
+    //   $('#filter_degree--range').attr({
+    //     min: nMin,
+    //     max: nMax,
+    //   })
+    // })
+  }
+
+  let xf = crossfilter(),
+  xfDim = {},
+  tableSetup = {
+    edges: {
+      xf: 'edge',
+    },
+    nodes: {
+      xf: 'node',
+    },
+    collection: {
+      xf: '',
+    }
+  },
+  tableIx = {}
+  const graph_el_id = 'cy',
+  layouts = addLayoutSelector(),
+  refreshTable = () => {
+    Object.keys(tableIx).forEach(k => {
+      $(`#table_${k}`)
+        .DataTable()
+        .clear()
+        .rows.add(
+          Object.values(window.kbase.data[k])
+          // xfDim[tableSetup[k]['xf']]
+          //   .group()
+          //   .top(Infinity)
+          //   .filter(d => d.value > 0)
+        )
+        .draw()
+      // addButtonListeners(k, tableIx[k], dataObj)
+//      tableIx[k].columns.adjust()
+    })
+  }
+
+  Object.keys(tableSetup).forEach(k => {
+    tableSetup[k].tableConfig = tableConfig(k)
+    tableSetup[k].tableConfig.data = []
+    tableIx[k] = $(`#table_${k}`).DataTable(tableSetup[k].tableConfig)
+  })
+  addDatasetSelector()
+  const cy = initGraph( graph_el_id, [], [] )
+  let collection = cy.collection()
+  window.kbase = {
+    tableIx: tableIx,
+    cy: cy,
+    data: {},
+    collection: collection,
+  }
+
+</script>
+[%
+    END; # end wrapper
+
+%]

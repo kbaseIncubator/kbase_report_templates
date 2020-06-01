@@ -1,8 +1,9 @@
 [%
-  page_title        = 'BLASTp Results';
-  table_id          = 'blastp_results-table';
-  data_file         = '/static/data/kb_blast_BLASTp_Search.tsv';
-  data_file_format  = 'tsv';
+  page_title         = 'BLASTp Results';
+  table_id           = 'blastp_results-table';
+  data_file          = '/static/data/kb_blast_BLASTp_Search.tsv';
+  data_file_format   = 'tsv';
+  include_datatables = 1;
 
   PROCESS 'views/inc/macros.tt';
   PROCESS 'views/inc/js.tt';
@@ -19,7 +20,7 @@
         },
     ];
 
-    tabbed_layout( page_content = page_content );
+    tabbed_layout;
 
     WRAPPER js_wrapper; %]
 
@@ -36,7 +37,8 @@
     }
 
     const cols = [
-      { data: "alignment_coverage",
+      {
+        data: "alignment_coverage",
         title: "Alignment coverage",
         orderable: false,
         render: renderMatchBar,
@@ -53,29 +55,36 @@
         data: "genome",
         title: "Genome",
       },
-      { data: "ident%",
+      {
+        data: "ident%",
         title: "Ident %",
       },
-      { data: "aln_len",
+      {
+        data: "aln_len",
         title: "Align. len.",
       },
-      { data: "e-value",
+      {
+        data: "e-value",
         title: "e-value"
       },
-      { data: "bit_score",
+      {
+        data: "bit_score",
         title: "Bit score",
       },
-      { data: "start_end",
+      {
+        data: "start_end",
         title: "Q start-end: match start-end",
       },
-      { data: "mismatch",
+      {
+        data: "mismatch",
         title: "Mismatch",
       },
-      { data: "gap_open",
+      {
+        data: "gap_open",
         title: "Gap open",
       },
     ]
-[%    
+[%
       PROCESS default_table_conf;
 
       # custom data wrangling
